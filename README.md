@@ -18,7 +18,7 @@ A 2D pixel-art mining adventure made with **Godot 4.7** (GDScript). Start with a
 | Mine | Hold Left Mouse (aim at a block) |
 | Use the selected hotbar item (place ladder or torch, throw dynamite, drink a tonic) | Right Mouse |
 | Select a hotbar slot | 1–6 or the mouse wheel |
-| Interact (talk, open machines or shops, ride elevators and carts, open chests) | E |
+| Interact (talk, enter or leave the mine, open machines or shops, ride elevators and carts, open chests) | E |
 | Inventory | I or Tab |
 | Skill Tree | K (unlocked during the tutorial) |
 | Map | M |

@@ -264,6 +264,11 @@ func _wall_row(x: int, y: int) -> int:
 	return maxi(0, wd.biome_at_row(y))
 
 func _needs_wall(x: int, y: int) -> bool:
+	# Every underground open cell gets a back wall in the biome's own rock, so caves never show
+	# flat background "holes" (this replaced the older edge-only walls).
+	return y >= 1
+
+func _needs_wall_edges_only(x: int, y: int) -> bool:
 	if y < 1:
 		return false
 	if x >= WD.SHAFT_X0 and x <= WD.SHAFT_X1 + 9 and y < 1300:
@@ -442,6 +447,13 @@ class DecorChunk:
 						draw_texture_rect_region(tex, Rect2(px, py, 32, 32), src, Color(1, 1, 1, 0.55))
 				if glow:
 					var id: int = wd.get_block(x, y)
+					if id == 93:
+						# water: soft blue body glow + shimmering surface highlight so pools read in the dark
+						var sh := 0.5 + 0.5 * sin(t * 2.2 + x * 0.9)
+						draw_rect(Rect2(x * 16, y * 16, 16, 16), Color(0.16, 0.38, 0.72, 0.10 + 0.05 * sh))
+						if wd.get_block(x, y - 1) != 93:
+							draw_rect(Rect2(x * 16, y * 16 + 1, 16, 1), Color(0.55, 0.85, 1.0, 0.45 + 0.3 * sh))
+							draw_rect(Rect2(x * 16 + int(sh * 11.0), y * 16 + 3, 4, 1), Color(0.8, 0.95, 1.0, 0.4 * sh))
 					if id >= 40 and id < 90:
 						var b: Dictionary = ResourceDatabase.block(id)
 						var hl: Color = renderer.highlight_cells.get(Vector2i(x, y), Color(0, 0, 0, 0))

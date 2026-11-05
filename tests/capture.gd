@@ -9,6 +9,8 @@ func _initialize() -> void:
 		quit(1)
 		return
 	var frames := int(args[2]) if args.size() > 2 else 40
+	# Never read or write the player's real save files from tests or screenshot runs.
+	root.get_node("SaveManager").use_test_saves()
 	var packed: PackedScene = load(args[0])
 	if packed == null:
 		print("capture: cannot load ", args[0])
@@ -22,6 +24,7 @@ func _initialize() -> void:
 		sc.call("_capture_setup", args.slice(3))
 	for i in frames:
 		await process_frame
+	await create_timer(1.5).timeout
 	var img := root.get_texture().get_image()
 	img.save_png(args[1])
 	print("capture saved ", args[1], " ", img.get_size())

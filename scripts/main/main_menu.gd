@@ -1,19 +1,13 @@
 extends Control
-## Main menu: animated mine-entrance scene (cart rolling out of the mine along the track,
-## flickering lanterns, crystal sparkles, dust, bobbing logo) with Continue / New Game /
-## Settings / Credits / Quit.
+## Main menu over the animated mine-entrance backdrop (see menu_backdrop.gd):
+## the cart of shiny gems stays still while crystals pulse, lanterns flicker and sparkles twinkle.
+## Buttons: Continue / New Game (top row), Settings / Credits / Quit (bottom row).
 
 const LoadingScreenScript = preload("res://scripts/main/loading_screen.gd")
 const SettingsPanel = preload("res://scripts/ui/panels/settings_panel.gd")
 const SETTINGS_SCENE := "res://scenes/ui/panels/SettingsPanel.tscn"
 const LOADING_SCENE := "res://scenes/main/LoadingScreen.tscn"
-const CART_SPEED := 46.0     # px per second along the track
-const CART_PAUSE := 1.4      # seconds hidden in the mine between runs
 
-@onready var stage: Control = %Stage
-@onready var cart: Sprite2D = %Cart
-@onready var logo: TextureRect = %Logo
-@onready var glows: Node2D = %Glows
 @onready var continue_button: Button = %ContinueButton
 @onready var continue_info: Label = %ContinueInfo
 @onready var new_button: Button = %NewButton
@@ -26,11 +20,6 @@ const CART_PAUSE := 1.4      # seconds hidden in the mine between runs
 @onready var overlay: Control = %Overlay
 @onready var fade: ColorRect = %Fade
 
-var time := 0.0
-var cart_t := 0.0
-var cart_wait := 0.0
-var cart_frames: Array[AtlasTexture] = []
-var arc_len := 1.0
 var _leaving := false
 
 func _ready() -> void:
@@ -39,16 +28,6 @@ func _ready() -> void:
 	get_tree().paused = false
 	GameState.in_game = false
 	GameState.ui_blocking = false
-	resized.connect(_fit_stage)
-	_fit_stage()
-	for i in 2:
-		var at := AtlasTexture.new()
-		at.atlas = ResourceDatabase.tex("res://assets/backgrounds/menu_cart.png")
-		at.region = Rect2(64 * i, 0, 64, 48)
-		cart_frames.append(at)
-	cart.texture = cart_frames[0]
-	arc_len = _measure_arc()
-	cart_t = 0.35
 	continue_button.pressed.connect(_on_continue)
 	new_button.pressed.connect(_on_new)
 	settings_button.pressed.connect(_on_settings)
@@ -56,70 +35,34 @@ func _ready() -> void:
 	quit_button.pressed.connect(_on_quit)
 	for b in [continue_button, new_button, settings_button, credits_button, quit_button]:
 		SettingsPanel.wire_sounds(b)
-	version_label.text = "v%s  •  Godot %s" % [ProjectSettings.get_setting("application/config/version", "1.0"), Engine.get_version_info().string.get_slice("-", 0)]
+	version_label.text = "DEEPMINE  v%s" % ProjectSettings.get_setting("application/config/version", "1.0")
 	_refresh_continue()
 	error_label.visible = SaveManager.last_error != ""
 	error_label.text = SaveManager.last_error
 	AudioManager.play_music("menu")
 	AudioManager.play_ambience("cave")
-	# intro animation
+	# intro: fade in, then the button rows rise into place one after another
 	fade.color.a = 1.0
-	menu_box.modulate.a = 0.0
-	menu_box.position.x -= 30
 	var tw := create_tween()
-	tw.tween_property(fade, "color:a", 0.0, 0.6)
-	tw.parallel().tween_property(menu_box, "modulate:a", 1.0, 0.6).set_delay(0.25)
-	tw.parallel().tween_property(menu_box, "position:x", menu_box.position.x + 30, 0.5).set_delay(0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(fade, "color:a", 0.0, 0.7)
+	var delay := 0.3
+	for row in menu_box.get_children():
+		if row is Control:
+			row.modulate.a = 0.0
+			var tw2 := create_tween()
+			tw2.tween_interval(delay)
+			tw2.tween_property(row, "modulate:a", 1.0, 0.35)
+			delay += 0.12
 	(continue_button if not continue_button.disabled else new_button).grab_focus()
-
-func _fit_stage() -> void:
-	var s := maxf(size.x / 640.0, size.y / 360.0)
-	stage.scale = Vector2(s, s)
-	stage.position = (size - Vector2(640, 360) * s) * 0.5
 
 func _refresh_continue() -> void:
 	var has := SaveManager.has_save()
 	continue_button.disabled = not has
 	var info := SaveManager.save_info() if has else {}
 	if info.is_empty():
-		continue_info.text = "No saved game"
+		continue_info.text = "No saved game yet"
 	else:
-		continue_info.text = "Lv %d  •  %dm  •  %s" % [int(info.level), int(info.depth), SettingsPanel._fmt_play(float(info.play_time))]
-
-# ---------------------------------------------------------------- animation
-func _measure_arc() -> float:
-	var l := 0.0
-	var prev := LoadingScreenScript.bezier(0.0)
-	for i in range(1, 65):
-		var p := LoadingScreenScript.bezier(i / 64.0)
-		l += p.distance_to(prev)
-		prev = p
-	return l
-
-func _process(delta: float) -> void:
-	time += delta
-	logo.position.y = 6.0 + round(sin(time * 1.5) * 2.0)
-	for g in glows.get_children():
-		g.modulate.a = 0.6 + 0.22 * sin(time * 6.5 + g.position.x * 0.37) + 0.12 * sin(time * 15.0 + g.position.y)
-	# cart rolls out of the mine portal along the track, then respawns
-	if cart_wait > 0.0:
-		cart_wait -= delta
-		cart.modulate.a = 0.0
-		return
-	var speed_scale := lerpf(0.45, 1.0, smoothstep(0.0, 0.6, cart_t))
-	cart_t += delta * CART_SPEED * speed_scale / arc_len
-	if cart_t >= 1.0:
-		cart_t = 0.0
-		cart_wait = CART_PAUSE
-		return
-	var p := LoadingScreenScript.bezier(cart_t)
-	var d := LoadingScreenScript.bezier(minf(cart_t + 0.01, 1.0)) - LoadingScreenScript.bezier(maxf(cart_t - 0.01, 0.0))
-	cart.position = p.round()
-	cart.rotation = atan2(d.y, d.x) * 0.6
-	var s := lerpf(0.45, 1.05, smoothstep(0.0, 0.75, cart_t))
-	cart.scale = Vector2(s, s)
-	cart.modulate.a = clampf(cart_t / 0.06, 0.0, 1.0) * clampf((1.0 - cart_t) / 0.05, 0.0, 1.0)
-	cart.texture = cart_frames[int(time * 9.0) % 2]
+		continue_info.text = "Saved game:  Lv %d  •  %dm deep  •  %s played" % [int(info.level), int(info.depth), SettingsPanel._fmt_play(float(info.play_time))]
 
 # ---------------------------------------------------------------- buttons
 func _on_continue() -> void:
@@ -141,7 +84,6 @@ func _start(mode: String) -> void:
 		return
 	_leaving = true
 	LoadingScreenScript.next_mode = mode
-	AudioManager.stop_music(0.6)
 	var tw := create_tween()
 	tw.tween_property(fade, "color:a", 1.0, 0.4)
 	await tw.finished
@@ -182,6 +124,8 @@ func _on_credits() -> void:
 		["The DeepMine team", ""],
 		["Pixel art, fonts & UI", "LabelDim"],
 		["Procedurally generated in-engine (tools/assetgen)", ""],
+		["Title artwork", "LabelDim"],
+		["Based on the DeepMine concept art", ""],
 		["Music, sound effects & ambience", "LabelDim"],
 		["Synthesized in-engine (tools/assetgen)", ""],
 		["", ""],
@@ -226,7 +170,4 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _capture_setup(_args: Array) -> void:
-	await (Engine.get_main_loop() as SceneTree).process_frame
-	await (Engine.get_main_loop() as SceneTree).create_timer(1.2).timeout
-	cart_t = 0.62
-	cart_wait = 0.0
+	await (Engine.get_main_loop() as SceneTree).create_timer(1.4).timeout

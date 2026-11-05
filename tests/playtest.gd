@@ -91,7 +91,8 @@ func _run() -> void:
 	check("walking moves the player", absf(p.global_position.x - x0) > 10.0, "dx=%.1f" % (p.global_position.x - x0))
 	var y0: float = p.global_position.y
 	send("jump", true)
-	await frames(10)
+	for i in 10:
+		await get_tree().physics_frame
 	var jumped: bool = p.global_position.y < y0 - 8.0
 	send("jump", false)
 	check("jump works", jumped)
@@ -100,15 +101,31 @@ func _run() -> void:
 	check("moved -> t_entrance", step_id() == "t_entrance", step_id())
 	await secs(0.3)
 	await dismiss_dialogs()
-	# 3. Walk to the entrance (hold right)
-	teleport(Vector2(game.camp.ENTRANCE_X - 60, -0.5))
-	await hold("move_right", 70)
-	await secs(0.5)
-	await dismiss_dialogs()
-	check("reached entrance -> t_mine", step_id() == "t_mine", step_id())
+	# 2b. World edges: walking off either side of the surface must be blocked
+	teleport(Vector2(70, -0.5))
 	await secs(0.3)
+	await hold("move_left", 120)
+	check("left world edge blocks the player", p.global_position.x >= 15.0 and p.global_position.y < 8.0, str(p.global_position))
+	teleport(Vector2(WD.W * 16 - 70, -0.5))
+	await secs(0.3)
+	await hold("move_right", 120)
+	check("right world edge blocks the player", p.global_position.x <= WD.W * 16 - 15.0 and p.global_position.y < 8.0, str(p.global_position))
+	# 3. Enter the mine through the portal (cutscene)
+	teleport(Vector2(game.camp.ENTRANCE_X - 70, -0.5))
+	await secs(0.4)
+	check("no pit under the mine portal", game.world.is_solid(WD.ENTRANCE_X, 0) and game.world.is_solid(WD.ENTRANCE_X + 1, 1))
+	game.enter_mine()
+	await secs(1.4)
+	await shot("cut_doorway")
+	await secs(1.6)
+	await shot("cut_inside")
+	await secs(4.0)
+	await shot("cut_arrived")
 	await dismiss_dialogs()
-	await shot("entrance")
+	check("entered mine -> t_mine", step_id() == "t_mine", step_id())
+	check("arrived at first blocks", p.global_position.y > 100.0 and absf(p.global_position.x - (game.world.markers["tutorial_stone"].x * 16 - 10.0)) < 24.0, str(p.global_position))
+	check("input restored after cutscene", p.input_enabled)
+	await dismiss_dialogs()
 	# 4. Mine stone in the tutorial cave
 	var stone_cell: Vector2i = game.world.markers["tutorial_stone"]
 	teleport(Vector2(stone_cell.x * 16 - 12, (stone_cell.y + 1) * 16 - 0.5))

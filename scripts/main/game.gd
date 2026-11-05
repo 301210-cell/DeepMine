@@ -83,6 +83,9 @@ func _ready() -> void:
 	for s in systems.get_children():
 		if "game" in s:
 			s.game = self
+	_patch_old_world()
+	_setup_mine_entrance()
+	_build_world_bounds()
 	# --- signals
 	Events.elevator_travel_requested.connect(_on_elevator_travel)
 	Events.drop_item_requested.connect(_on_drop_item)
@@ -547,6 +550,22 @@ func _capture_setup(args: Array) -> void:
 	for b in ResourceDatabase.biomes:
 		if b.key == where:
 			bi = int(b.index)
+	if where == "water":
+		for y in range(20, 150):
+			for x in range(20, WD.W - 20):
+				if world.get_block(x, y) == ResourceDatabase.WATER and world.get_block(x, y - 1) == 0:
+					var sx := -1
+					for dx in range(1, 10):
+						for cx in [x - dx, x + dx]:
+							if sx < 0 and world.get_block(cx, y - 1) == 0 and world.get_block(cx, y - 2) == 0 and world.is_solid(cx, y):
+								sx = cx
+					var wp := Vector2(sx * 16 + 8, y * 16 - 0.5)
+					if sx >= 0:
+						player.global_position = wp
+						renderer.force_load_around(wp, get_viewport_rect().size)
+						camera.global_position = wp + Vector2(0, -30)
+						_on_player_cell(WD.cell_of(wp + Vector2(0, -8)))
+						return
 	if bi >= 0:
 		var b := ResourceDatabase.biome(bi)
 		var mid := (int(b.rows[0]) + int(b.rows[1])) / 2
@@ -662,3 +681,181 @@ func set_ambient(kind: String) -> void:
 			p.color = Color(0.92, 0.86, 0.74, 0.32)
 	p.restart()
 	p.emitting = true
+
+# ================================================================ mine entrance cutscenes
+const Interactable = preload("res://scripts/world/interactable.gd")
+var _letterbox: CanvasLayer
+var _exit_door: Area2D
+
+func _setup_mine_entrance() -> void:
+	# "Exit to Surface" doorway inside the timbered entrance hall.
+	if not world.markers.has("mine_inside"):
+		return
+	var inside: Vector2i = world.markers["mine_inside"]
+	_exit_door = Interactable.new()
+	_exit_door.setup("Exit to Surface", Vector2(26, 34), Vector2.ZERO, func(_p): exit_mine())
+	_exit_door.position = WD.cell_center(inside) + Vector2(-16, -8)
+	$World.add_child(_exit_door)
+
+func _set_letterbox(on: bool) -> void:
+	if _letterbox == null:
+		_letterbox = CanvasLayer.new()
+		_letterbox.layer = 11
+		for i in 2:
+			var bar := ColorRect.new()
+			bar.color = Color(0.01, 0.01, 0.03, 1.0)
+			bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			bar.set_anchors_preset(Control.PRESET_TOP_WIDE if i == 0 else Control.PRESET_BOTTOM_WIDE)
+			bar.custom_minimum_size = Vector2(0, 30)
+			bar.size = Vector2(get_viewport_rect().size.x, 30)
+			bar.position = Vector2(0, -30) if i == 0 else Vector2(0, get_viewport_rect().size.y)
+			_letterbox.add_child(bar)
+		add_child(_letterbox)
+	var vp := get_viewport_rect().size
+	var top: ColorRect = _letterbox.get_child(0)
+	var bot: ColorRect = _letterbox.get_child(1)
+	top.size.x = vp.x
+	bot.size.x = vp.x
+	var tw := create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(top, "position:y", 0.0 if on else -30.0, 0.45)
+	tw.tween_property(bot, "position:y", vp.y - 30.0 if on else vp.y, 0.45)
+	if ui and ui.get("hud"):
+		create_tween().tween_property(ui.hud, "modulate:a", 0.0 if on else 1.0, 0.35)
+	await tw.finished
+
+func _show_area_title(title: String, sub: String) -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 12
+	add_child(layer)
+	var box := VBoxContainer.new()
+	box.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	box.position = Vector2(get_viewport_rect().size.x * 0.5 - 150, 62)
+	box.size = Vector2(300, 40)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(box)
+	var t := Label.new()
+	t.text = title
+	t.theme_type_variation = &"LabelTitle"
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	t.add_theme_color_override("font_color", Color("ffd35a"))
+	box.add_child(t)
+	var s := Label.new()
+	s.text = sub
+	s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	s.add_theme_color_override("font_color", Color(0.85, 0.9, 1.0))
+	box.add_child(s)
+	box.modulate.a = 0.0
+	var tw := create_tween()
+	tw.tween_property(box, "modulate:a", 1.0, 0.5)
+	tw.tween_interval(1.6)
+	tw.tween_property(box, "modulate:a", 0.0, 0.6)
+	tw.tween_callback(layer.queue_free)
+
+## Walk into the MINE portal, fade, appear in the entrance hall and walk to the first blocks.
+func enter_mine() -> void:
+	if _travelling or not world.markers.has("mine_inside"):
+		return
+	_travelling = true
+	player.input_enabled = false
+	if ui and ui.has_method("close_panel"):
+		ui.close_panel()
+	if ui and ui.has_method("hide_prompt"):
+		ui.hide_prompt()
+	await _set_letterbox(true)
+	await player.walk_to(camp.ENTRANCE_X, 4.0)
+	# step into the dark doorway: the miner shrinks and darkens as he walks into the tunnel
+	player.facing = 1
+	AudioManager.play("step", -8.0)
+	var tw := create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(player, "depth_scale", 0.72, 0.9)
+	tw.tween_property(player.visual, "modulate", Color(0.18, 0.16, 0.24, 1.0), 0.9)
+	tw.tween_property(player, "global_position:y", player.global_position.y - 5.0, 0.9)
+	await tw.finished
+	if ui and ui.has_method("fade_out"):
+		await ui.fade_out(0.45)
+	# inside the mine
+	var inside: Vector2i = world.markers["mine_inside"]
+	var pos := Vector2(inside.x * 16 + 8, (inside.y + 1) * 16 - 0.5)
+	player.global_position = pos
+	player.velocity = Vector2.ZERO
+	player.depth_scale = 1.0
+	player.visual.modulate = Color.WHITE
+	player.facing = 1
+	renderer.force_load_around(pos, get_viewport_rect().size)
+	camera.global_position = pos + Vector2(40, -30)
+	camera.reset_smoothing()
+	_on_player_cell(WD.cell_of(pos + Vector2(0, -8)))
+	AudioManager.play("ladder", -6.0)
+	if ui and ui.has_method("fade_in"):
+		await ui.fade_in(0.6)
+	_show_area_title("Stone Caverns", "The Mine Entrance  •  20m")
+	var first_x := float(world.markers.get("tutorial_stone", Vector2i(106, 9)).x * 16) - 10.0
+	await player.walk_to(first_x, 6.0)
+	await _set_letterbox(false)
+	player.input_enabled = true
+	_travelling = false
+	Events.mine_entered.emit()
+	SaveManager.save_game()
+
+## Leave through the entrance hall doorway and walk out of the MINE portal on the surface.
+func exit_mine() -> void:
+	if _travelling:
+		return
+	_travelling = true
+	player.input_enabled = false
+	if ui and ui.has_method("hide_prompt"):
+		ui.hide_prompt()
+	await _set_letterbox(true)
+	if ui and ui.has_method("fade_out"):
+		await ui.fade_out(0.45)
+	var pos := Vector2(camp.ENTRANCE_X, -0.5)
+	player.global_position = pos + Vector2(0, -5)
+	player.velocity = Vector2.ZERO
+	player.depth_scale = 0.72
+	player.visual.modulate = Color(0.18, 0.16, 0.24, 1.0)
+	player.facing = -1
+	renderer.force_load_around(pos, get_viewport_rect().size)
+	camera.global_position = pos + Vector2(-30, -30)
+	camera.reset_smoothing()
+	_on_player_cell(WD.cell_of(pos + Vector2(0, -8)))
+	if ui and ui.has_method("fade_in"):
+		await ui.fade_in(0.5)
+	var tw := create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(player, "depth_scale", 1.0, 0.8)
+	tw.tween_property(player.visual, "modulate", Color.WHITE, 0.8)
+	await player.walk_to(camp.ENTRANCE_X - 44.0, 4.0)
+	await _set_letterbox(false)
+	player.input_enabled = true
+	_travelling = false
+	Events.mine_exited.emit()
+	SaveManager.save_game()
+
+# ================================================================ world edge walls
+func _build_world_bounds() -> void:
+	## Invisible walls at the left/right edges of the world (sky to bedrock) so nobody can walk off.
+	var body := StaticBody2D.new()
+	body.name = "WorldBounds"
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var h := float(WD.H * 16 + 4000)
+	for side in [-1, 1]:
+		var cs := CollisionShape2D.new()
+		var rs := RectangleShape2D.new()
+		rs.size = Vector2(64, h)
+		cs.shape = rs
+		var x := -32.0 + 16.0 if side < 0 else float(WD.W * 16) + 32.0 - 16.0
+		cs.position = Vector2(x, h * 0.5 - 2000.0)
+		body.add_child(cs)
+	$World.add_child(body)
+
+func _patch_old_world() -> void:
+	## Saves made before v1.1 had an open staircase pit under the MINE portal: seal it.
+	if world.markers.has("mine_inside"):
+		return
+	for x in range(WD.ENTRANCE_X - 3, WD.ENTRANCE_X + 4):
+		world.set_block(x, 0, ResourceDatabase.GRASS)
+		for y in range(1, 4):
+			if world.get_block(x, y) == ResourceDatabase.AIR:
+				world.set_block(x, y, ResourceDatabase.DIRT)
+	world.markers["mine_inside"] = Vector2i(WD.SHAFT_X1 + 3, 9)
+	world.set_decor(WD.SHAFT_X1 + 2, 9, 34)

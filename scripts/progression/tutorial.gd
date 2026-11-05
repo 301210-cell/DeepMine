@@ -18,6 +18,7 @@ func _ready() -> void:
 	Events.elevator_used.connect(_on_elevator)
 	Events.machine_output.connect(func(_m, item, n): _on_event("smelt_item", item, n))
 	Events.sold.connect(func(_v): _on_event("sell", "", 1))
+	Events.mine_entered.connect(func(): _on_event("enter_mine", "", 1))
 	Events.skill_ranked.connect(func(_id, _r): _poll_t = 0.0)
 	Events.equipment_changed.connect(func(): _poll_t = 0.0)
 	Events.tutorial_changed.connect(_on_tutorial_changed)

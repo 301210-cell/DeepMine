@@ -315,19 +315,15 @@ func _entrance_and_tutorial() -> void:
 	var ex := WD.ENTRANCE_X
 	wd.markers["entrance"] = Vector2i(ex + 1, -1)
 	wd.markers["spawn"] = Vector2i(WD.SPAWN_X, -1)
-	# Staircase from the surface (row 0) down-right to the tutorial cave floor (row 10).
-	var x := ex
-	var y := 0
-	while y < 8:
-		for yy in range(y - 2, y + 1):
-			for xx in range(x, x + 3):
-				if yy >= 0:
-					_s(xx, yy, AIR)
-		x += 2
-		y += 1
-	# Support beams along the stairs.
-	wd.set_decor(ex + 1, 2, 34)
-	wd.set_decor(ex + 9, 6, 34)
+	# The surface stays solid under the MINE portal (no open pit). Entering the mine plays a short
+	# cutscene: the miner appears in the timbered entrance hall (the 20m elevator station room)
+	# and walks through into the tutorial cave to the first stone blocks.
+	for xx in range(ex - 3, ex + 4):
+		_s(xx, 0, GRASS)
+		for yy in range(1, 4):
+			_s(xx, yy, DIRT)
+	wd.markers["mine_inside"] = Vector2i(WD.SHAFT_X1 + 3, 9)
+	wd.set_decor(WD.SHAFT_X1 + 2, 9, 34)
 	# Tutorial cave: rows 6..9 from the station room to x ~132, floor at row 10.
 	var cave_x0 := WD.SHAFT_X1 + 1
 	var cave_x1 := 132

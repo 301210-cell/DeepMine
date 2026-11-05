@@ -2,9 +2,11 @@ extends Node
 ## Autoload "SaveManager": JSON save/load with backup, versioning/migration and corruption handling,
 ## periodic autosave, plus user settings (audio, display, key bindings) stored separately.
 
-const SAVE_PATH := "user://deepmine_save.json"
-const BACKUP_PATH := "user://deepmine_save.bak.json"
-const TEMP_PATH := "user://deepmine_save.tmp"
+# Save file locations (vars so automated tests can redirect them; see use_test_saves()).
+var save_dir := "user://"
+var SAVE_PATH := "user://deepmine_save.json"
+var BACKUP_PATH := "user://deepmine_save.bak.json"
+var TEMP_PATH := "user://deepmine_save.tmp"
 const SETTINGS_PATH := "user://deepmine_settings.json"
 const AUTOSAVE_INTERVAL := 60.0
 
@@ -86,7 +88,7 @@ func save_game() -> bool:
 		last_error = "Save verification failed; previous save kept."
 		push_error(last_error)
 		return false
-	var dir := DirAccess.open("user://")
+	var dir := DirAccess.open(save_dir)
 	if FileAccess.file_exists(SAVE_PATH):
 		if FileAccess.file_exists(BACKUP_PATH):
 			dir.remove(BACKUP_PATH.get_file())
@@ -130,7 +132,7 @@ func migrate(d: Dictionary) -> Dictionary:
 
 ## Moves the current save aside (requires a UI confirmation before calling). Nothing is destroyed.
 func reset_save() -> void:
-	var dir := DirAccess.open("user://")
+	var dir := DirAccess.open(save_dir)
 	var stamp := Time.get_datetime_string_from_system(false, false).replace(":", "-")
 	if FileAccess.file_exists(SAVE_PATH):
 		dir.rename(SAVE_PATH.get_file(), "deepmine_save.reset-%s.json" % stamp)
@@ -138,7 +140,7 @@ func reset_save() -> void:
 		dir.rename(BACKUP_PATH.get_file(), "deepmine_save.bak.reset-%s.json" % stamp)
 
 func _quarantine(path: String) -> void:
-	var dir := DirAccess.open("user://")
+	var dir := DirAccess.open(save_dir)
 	var stamp := Time.get_datetime_string_from_system(false, false).replace(":", "-")
 	dir.rename(path.get_file(), path.get_file().get_basename() + ".corrupt-%s.json" % stamp)
 
@@ -254,3 +256,11 @@ func _event_from_dict(d: Dictionary) -> InputEvent:
 			m.device = -1
 			return m
 	return null
+
+## Automated tests and screenshot tools call this first so they never touch the player's real saves.
+func use_test_saves() -> void:
+	save_dir = "user://test_saves/"
+	DirAccess.make_dir_recursive_absolute(save_dir)
+	SAVE_PATH = save_dir + "deepmine_save.json"
+	BACKUP_PATH = save_dir + "deepmine_save.bak.json"
+	TEMP_PATH = save_dir + "deepmine_save.tmp"

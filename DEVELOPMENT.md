@@ -1,6 +1,14 @@
 # DeepMine — Development Checklist
 
-Status as of v1.0.0 (Godot 4.7.2). Automated checks: `tests/compile_all.gd` (all scripts and scenes compile), `tests/smoke_core.gd` (core logic), `tests/test_worldgen.gd` (generation statistics and save round-trip), `tests/Playtest.tscn` (34-step automated playthrough of the tutorial loop, panels, events and save/load: **34/34 passing**).
+## Changelog
+* **v1.1.0**
+  * The mine entrance has no pit any more: press E at the MINE portal for a short cutscene (walk into the tunnel, fade, appear in the timbered entrance hall, walk to the first blocks). An "Exit to Surface" doorway in the hall plays the reverse.
+  * Invisible walls at the world edges stop the player from walking off the map.
+  * The new title screen and loading screen use the concept-art picture, with animated crystal glow, lantern flicker and twinkling gem sparkles on the still mine cart.
+  * Caves always show a rock back wall (no flat blue background holes), and water has a shimmering surface.
+* **v1.0.0**: first release.
+
+Status as of v1.1.0 (Godot 4.7.2). Automated checks: `tests/compile_all.gd` (all scripts and scenes compile), `tests/smoke_core.gd` (core logic), `tests/test_worldgen.gd` (generation statistics and save round-trip), `tests/Playtest.tscn` (39-check automated playthrough: tutorial loop including the mine-entrance cutscene, world-edge walls, panels, events and save/load: **39/39 passing**).
 
 ## Completed
 | Phase | Area | Notes |

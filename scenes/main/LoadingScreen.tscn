@@ -1,75 +1,14 @@
-[gd_scene format=3]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://scripts/main/loading_screen.gd" id="1_s"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/menu_far.png" id="10_far"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/menu_main.png" id="11_main"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/logo.png" id="12_logo"]
+[ext_resource type="Script" path="res://scripts/main/loading_screen.gd" id="1_loading"]
+[ext_resource type="Script" path="res://scripts/main/menu_backdrop.gd" id="2_backdrop"]
 
-[sub_resource type="Gradient" id="g_glow"]
+[sub_resource type="Gradient" id="Gradient_shade"]
 offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(1, 0.72, 0.32, 0.75, 1, 0.45, 0.12, 0)
+colors = PackedColorArray(0.02, 0.03, 0.09, 0, 0.02, 0.03, 0.09, 0.85)
 
-[sub_resource type="GradientTexture2D" id="gt_glow"]
-gradient = SubResource("g_glow")
-width = 48
-height = 48
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-
-[sub_resource type="Gradient" id="g_crys"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.45, 0.8, 1, 0.45, 0.3, 0.5, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="gt_crys"]
-gradient = SubResource("g_crys")
-width = 128
-height = 128
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-
-[sub_resource type="Gradient" id="g_crys2"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.75, 0.45, 1, 0.45, 0.55, 0.25, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="gt_crys2"]
-gradient = SubResource("g_crys2")
-width = 128
-height = 128
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-
-[sub_resource type="CanvasItemMaterial" id="mat_add"]
-blend_mode = 1
-
-[sub_resource type="Gradient" id="g_vig"]
-offsets = PackedFloat32Array(0.5, 1)
-colors = PackedColorArray(0, 0, 0, 0, 0.01, 0.01, 0.05, 0.72)
-
-[sub_resource type="GradientTexture2D" id="gt_vig"]
-gradient = SubResource("g_vig")
-width = 160
-height = 90
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1.08, 1.08)
-
-[sub_resource type="Gradient" id="g_spark"]
-offsets = PackedFloat32Array(0, 0.2, 1)
-colors = PackedColorArray(0.7, 0.95, 1, 0, 0.8, 0.97, 1, 1, 0.6, 0.8, 1, 0)
-
-[sub_resource type="Gradient" id="g_dust"]
-offsets = PackedFloat32Array(0, 0.3, 1)
-colors = PackedColorArray(1, 0.9, 0.7, 0, 1, 0.9, 0.7, 0.5, 1, 0.9, 0.7, 0)
-
-[sub_resource type="Gradient" id="g_band"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.02, 0.03, 0.08, 0, 0.02, 0.03, 0.08, 0.9)
-
-[sub_resource type="GradientTexture2D" id="gt_band"]
-gradient = SubResource("g_band")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_shade"]
+gradient = SubResource("Gradient_shade")
 width = 8
 height = 64
 fill_to = Vector2(0, 1)
@@ -81,9 +20,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_s")
+script = ExtResource("1_loading")
 
-[node name="Bg" type="ColorRect" parent="."]
+[node name="Backdrop" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -91,144 +30,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.043, 0.063, 0.149, 1)
+script = ExtResource("2_backdrop")
 
-[node name="Stage" type="Control" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 0
-offset_right = 640.0
-offset_bottom = 360.0
-mouse_filter = 2
-
-[node name="Far" type="TextureRect" parent="Stage"]
-layout_mode = 0
-offset_right = 640.0
-offset_bottom = 360.0
-mouse_filter = 2
-texture = ExtResource("10_far")
-
-[node name="CrystalGlowL" type="Sprite2D" parent="Stage"]
-material = SubResource("mat_add")
-position = Vector2(80, 290)
-scale = Vector2(1.6, 1.4)
-texture = SubResource("gt_crys")
-
-[node name="CrystalGlowR" type="Sprite2D" parent="Stage"]
-material = SubResource("mat_add")
-position = Vector2(585, 290)
-scale = Vector2(1.4, 1.4)
-texture = SubResource("gt_crys2")
-
-[node name="Main" type="TextureRect" parent="Stage"]
-layout_mode = 0
-offset_right = 640.0
-offset_bottom = 360.0
-mouse_filter = 2
-texture = ExtResource("11_main")
-
-[node name="Glows" type="Node2D" parent="Stage"]
-unique_name_in_owner = true
-
-[node name="G1" type="Sprite2D" parent="Stage/Glows"]
-material = SubResource("mat_add")
-position = Vector2(206, 220)
-texture = SubResource("gt_glow")
-
-[node name="G2" type="Sprite2D" parent="Stage/Glows"]
-material = SubResource("mat_add")
-position = Vector2(273, 251)
-texture = SubResource("gt_glow")
-
-[node name="G3" type="Sprite2D" parent="Stage/Glows"]
-material = SubResource("mat_add")
-position = Vector2(369, 251)
-texture = SubResource("gt_glow")
-
-[node name="G4" type="Sprite2D" parent="Stage/Glows"]
-material = SubResource("mat_add")
-position = Vector2(172, 261)
-scale = Vector2(0.7, 0.7)
-texture = SubResource("gt_glow")
-
-[node name="G5" type="Sprite2D" parent="Stage/Glows"]
-material = SubResource("mat_add")
-position = Vector2(509, 270)
-scale = Vector2(0.8, 0.8)
-texture = SubResource("gt_glow")
-
-[node name="G6" type="Sprite2D" parent="Stage/Glows"]
-material = SubResource("mat_add")
-position = Vector2(320, 278)
-scale = Vector2(1.5, 1.2)
-texture = SubResource("gt_glow")
-
-[node name="Sparkles" type="CPUParticles2D" parent="Stage"]
-position = Vector2(320, 260)
-amount = 40
-lifetime = 2.6
-preprocess = 3.0
-emission_shape = 3
-emission_rect_extents = Vector2(320, 90)
-direction = Vector2(0, -1)
-spread = 30.0
-gravity = Vector2(0, -6)
-initial_velocity_min = 2.0
-initial_velocity_max = 8.0
-scale_amount_min = 1.0
-scale_amount_max = 2.0
-color_ramp = SubResource("g_spark")
-
-[node name="Dust" type="CPUParticles2D" parent="Stage"]
-position = Vector2(320, 180)
-amount = 30
-lifetime = 6.0
-preprocess = 6.0
-emission_shape = 3
-emission_rect_extents = Vector2(330, 180)
-direction = Vector2(1, -0.3)
-spread = 40.0
-gravity = Vector2(0, 0)
-initial_velocity_min = 3.0
-initial_velocity_max = 7.0
-color_ramp = SubResource("g_dust")
-
-[node name="Cart" type="Sprite2D" parent="Stage"]
-unique_name_in_owner = true
-position = Vector2(500, 340)
-offset = Vector2(0, -24)
-
-[node name="Logo" type="TextureRect" parent="Stage"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 120.0
-offset_top = 6.0
-offset_right = 520.0
-offset_bottom = 134.0
-mouse_filter = 2
-texture = ExtResource("12_logo")
-
-[node name="Vignette" type="TextureRect" parent="Stage"]
-texture_filter = 2
-layout_mode = 0
-offset_right = 640.0
-offset_bottom = 360.0
-mouse_filter = 2
-texture = SubResource("gt_vig")
-expand_mode = 1
-
-[node name="Band" type="TextureRect" parent="."]
-texture_filter = 2
+[node name="BottomShade" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -120.0
+offset_top = -80.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-texture = SubResource("gt_band")
+texture = SubResource("GradientTexture2D_shade")
 expand_mode = 1
 
 [node name="Bottom" type="VBoxContainer" parent="."]
@@ -239,38 +53,42 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -170.0
-offset_top = -74.0
-offset_right = 170.0
-offset_bottom = -6.0
+offset_top = -66.0
+offset_right = 90.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
+alignment = 2
 
 [node name="PercentLabel" type="Label" parent="Bottom"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"LabelHeader"
+theme_type_variation = &"LabelTitle"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Loading... 0%"
 horizontal_alignment = 1
 
 [node name="Bar" type="ProgressBar" parent="Bottom"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 12)
+custom_minimum_size = Vector2(250, 10)
 layout_mode = 2
 size_flags_horizontal = 4
 show_percentage = false
 
-[node name="Tagline" type="Label" parent="Bottom"]
+[node name="TagLabel" type="Label" parent="Bottom"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.93, 0.95, 1, 1)
 text = "Explore. Mine. Upgrade. Discover."
 horizontal_alignment = 1
 
 [node name="TipLabel" type="Label" parent="Bottom"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"LabelDim"
-text = "Tip:"
+theme_type_variation = &"LabelSmall"
+theme_override_colors/font_color = Color(0.72, 0.8, 1, 0.9)
+text = "Tip: ..."
 horizontal_alignment = 1
 
 [node name="ErrorBox" type="PanelContainer" parent="."]
@@ -283,27 +101,26 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -150.0
-offset_top = -50.0
+offset_top = -40.0
 offset_right = 150.0
-offset_bottom = 50.0
+offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="ErrorBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
+alignment = 1
 
 [node name="ErrorLabel" type="Label" parent="ErrorBox/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(270, 0)
 layout_mode = 2
-text = "Error"
 horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="BackButton" type="Button" parent="ErrorBox/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 24)
+custom_minimum_size = Vector2(110, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Back to Menu"

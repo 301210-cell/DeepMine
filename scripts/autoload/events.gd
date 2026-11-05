@@ -70,3 +70,5 @@ signal dialog_finished
 signal recall_requested
 signal loot_cart_found
 signal mara_talked
+signal mine_entered
+signal mine_exited

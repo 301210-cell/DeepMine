@@ -57,6 +57,9 @@ var _peak_y := 0.0
 var _was_on_floor := true
 var _hazard_t := 0.0
 var _scale_vel := Vector2.ZERO
+var _squash := Vector2.ONE       # spring-driven squash/stretch (applied to visual.scale)
+var depth_scale := 1.0           # cutscenes: < 1 makes the miner recede into a doorway
+var walk_target := INF           # cutscenes: auto-walk toward this x
 var _lean := 0.0
 var _step_offset := 0.0
 var _last_cell := Vector2i(-999, -999)
@@ -67,6 +70,7 @@ var _turn_squash := 0.0
 
 signal moved_cell(cell: Vector2i)
 signal interact_pressed(target)
+signal walk_arrived
 
 func _ready() -> void:
 	add_to_group("player")
@@ -100,6 +104,12 @@ func _physics_process(delta: float) -> void:
 		iy = Input.get_axis("climb_up", "climb_down")
 		if ix != 0.0:
 			_moved_dirs[signf(ix)] = true
+	if walk_target < INF:
+		var dx := walk_target - global_position.x
+		ix = clampf(dx / 6.0, -1.0, 1.0) if absf(dx) > 1.5 else 0.0
+		if ix == 0.0:
+			walk_target = INF
+			walk_arrived.emit()
 	var on_floor := is_on_floor()
 	var feet := global_position + Vector2(0, -2)
 	var center := global_position + Vector2(0, -HEIGHT * 0.5)
@@ -208,7 +218,7 @@ func _do_jump(mult: float) -> void:
 	_jump_buf = 0.0
 	_peak_y = global_position.y
 	_scale_vel = Vector2(-2.4, 3.4)
-	visual.scale = Vector2(0.82, 1.18)
+	_squash = Vector2(0.82, 1.18)
 	AudioManager.play("jump", -8.0, 0.08)
 	if game: game.effects.dust(global_position, 4)
 
@@ -216,7 +226,7 @@ func _on_land(impact_vy: float) -> void:
 	var fall := global_position.y - _peak_y
 	var strength := clampf(impact_vy / MAX_FALL, 0.0, 1.0)
 	if strength > 0.25:
-		visual.scale = Vector2(1.0 + 0.32 * strength, 1.0 - 0.28 * strength)
+		_squash = Vector2(1.0 + 0.32 * strength, 1.0 - 0.28 * strength)
 		_land_t = 0.12
 		AudioManager.play("land", -6.0 + strength * 4.0, 0.1)
 		if game: game.effects.dust(global_position, int(4 + 8 * strength))
@@ -301,6 +311,14 @@ func has_moved_both_ways() -> bool:
 var _focus = null
 
 func _update_interaction(can_input: bool) -> void:
+	if not input_enabled or riding:
+		# cutscenes / rides: no prompts
+		if _focus != null:
+			_focus = null
+			var ui0 := get_tree().get_first_node_in_group("ui_root")
+			if ui0 and ui0.has_method("hide_prompt"):
+				ui0.hide_prompt()
+		return
 	var best = null
 	var best_d := INF
 	for a in interact_area.get_overlapping_areas():
@@ -388,9 +406,10 @@ func _update_anim(delta: float) -> void:
 	# --- procedural layers (smooth): spring squash/stretch, lean, step-up ease, turn squash
 	var k := 260.0
 	var damp := 18.0
-	var disp := Vector2.ONE - visual.scale
+	var disp := Vector2.ONE - _squash
 	_scale_vel += (disp * k - _scale_vel * damp) * delta
-	visual.scale += _scale_vel * delta
+	_squash += _scale_vel * delta
+	visual.scale = _squash * depth_scale
 	_turn_squash = move_toward(_turn_squash, 0.0, delta * 9.0)
 	var target_lean := 0.0
 	if on_floor and absf(velocity.x) > 40.0 and not mining:
@@ -412,3 +431,13 @@ func set_riding(on: bool) -> void:
 	riding = on
 	velocity = Vector2.ZERO
 	climbing = false
+
+## Cutscene helper: walks (and falls down steps) toward world x, with a safety timeout.
+func walk_to(x: float, timeout: float = 6.0) -> void:
+	walk_target = x
+	var t := 0.0
+	while walk_target < INF and t < timeout:
+		await get_tree().physics_frame
+		t += get_physics_process_delta_time()
+	walk_target = INF
+	velocity.x = 0.0

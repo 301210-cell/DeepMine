@@ -45,6 +45,9 @@ func build(p_game) -> void:
 	# Mine entrance (decorative portal over the stair opening)
 	var ent := _sprite("res://assets/sprites/world/mine_entrance.png", Vector2(ENTRANCE_X, 0), 1)
 	ent.z_index = 1
+	var door := Interactable.new()
+	door.setup("Enter the Mine", Vector2(56, 44), Vector2(0, ent.texture.get_height() * 0.5 - 22.0), func(_p): game.enter_mine())
+	ent.add_child(door)
 	targets["entrance"] = Vector2(ENTRANCE_X, -40)
 	_lamp(ENTRANCE_X - 40, -60, light_tex, Color("ffc070"), 0.8)
 	_lamp(ENTRANCE_X + 40, -60, light_tex, Color("ffc070"), 0.8)
