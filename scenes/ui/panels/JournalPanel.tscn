@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/panels/journal_panel.gd" id="1_s"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_normal.png" id="2_cn"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_hover.png" id="3_ch"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_pressed.png" id="4_cp"]
+
+[node name="JournalPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_s")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.08, 0.6)
+
+[node name="Window" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -284.0
+offset_top = -166.0
+offset_right = 284.0
+offset_bottom = 166.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Window"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleRow" type="HBoxContainer" parent="Window/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleIcon" type="TextureRect" parent="Window/VBox/TitleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 2
+
+[node name="Title" type="Label" parent="Window/VBox/TitleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LabelHeader"
+text = "Journal"
+
+[node name="CloseButton" type="TextureButton" parent="Window/VBox/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+texture_normal = ExtResource("2_cn")
+texture_pressed = ExtResource("4_cp")
+texture_hover = ExtResource("3_ch")
+
+[node name="TabRow" type="HBoxContainer" parent="Window/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Pages" type="Control" parent="Window/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3

@@ -1,0 +1,21 @@
+{
+  "_doc": "Loot tables. entries: [item, weight, min, max] (optional 5th value = min depth meters). rolls = [min,max] picks. coins = [min,max].",
+  "geodes": {
+    "geode_small": {"rolls": [1, 2], "coins": [5, 30], "entries": [["quartz", 40, 1, 3], ["copper_ore", 20, 2, 4], ["coal", 15, 2, 5], ["amethyst", 10, 1, 1], ["topaz", 6, 1, 1], ["sapphire", 4, 1, 1], ["crystal_shard", 5, 1, 2]]},
+    "geode_iron": {"rolls": [2, 2], "coins": [20, 80], "entries": [["silver_ore", 25, 1, 3], ["iron_ore", 25, 2, 4], ["quartz", 15, 2, 4], ["gold_ore", 12, 1, 2], ["amethyst", 10, 1, 1], ["emerald", 5, 1, 1], ["ruby", 4, 1, 1], ["fossil_trilobite", 1, 1, 1]]},
+    "geode_rare": {"rolls": [2, 3], "coins": [60, 200], "entries": [["amethyst", 20, 1, 2], ["sapphire", 18, 1, 2], ["emerald", 15, 1, 2], ["ruby", 12, 1, 1], ["topaz", 14, 1, 2], ["crystal_shard", 15, 2, 4], ["opal", 3, 1, 1], ["blue_sapphire", 2, 1, 1], ["diamond", 0.4, 1, 1]]},
+    "geode_ice": {"rolls": [2, 3], "coins": [100, 300], "entries": [["frost_crystal", 30, 1, 2], ["blue_sapphire", 15, 1, 1], ["opal", 10, 1, 1], ["topaz", 15, 1, 2], ["sapphire", 15, 1, 2], ["frozen_iron", 15, 2, 3], ["diamond", 0.8, 1, 1], ["fossil_ammonite", 1.5, 1, 1]]},
+    "geode_magma": {"rolls": [2, 3], "coins": [200, 500], "entries": [["magma_crystal", 25, 1, 2], ["emberstone", 20, 1, 1], ["ruby", 20, 1, 2], ["obsidian", 15, 2, 4], ["volcanic_iron", 15, 1, 3], ["diamond", 2, 1, 1], ["artifact_idol", 0.8, 1, 1]]},
+    "geode_legendary": {"rolls": [3, 4], "coins": [500, 1500], "entries": [["star_crystal", 15, 1, 1], ["diamond", 15, 1, 1], ["ancient_gold", 20, 1, 3], ["relic_fragment", 20, 1, 2], ["opal", 12, 1, 2], ["prototype_mineral", 6, 1, 1], ["artifact_tablet", 2, 1, 1], ["artifact_core", 1, 1, 1]]}
+  },
+  "fossil": {"rolls": [1, 1], "coins": [0, 0], "entries": [["fossil_fern", 50, 1, 1, 0], ["fossil_trilobite", 30, 1, 1, 300], ["fossil_ammonite", 25, 1, 1, 300], ["fossil_skull", 8, 1, 1, 700]]},
+  "artifact": {"rolls": [1, 1], "coins": [0, 0], "entries": [["artifact_idol", 40, 1, 1, 0], ["artifact_gear", 35, 1, 1, 2500], ["artifact_tablet", 15, 1, 1, 2500], ["artifact_core", 5, 1, 1, 2900]]},
+  "chests": [
+    {"rolls": [3, 4], "coins": [40, 120], "entries": [["coal", 20, 3, 8], ["copper_ore", 20, 3, 6], ["quartz", 12, 1, 3], ["geode_small", 8, 1, 2], ["ladder", 10, 5, 10], ["torch", 10, 4, 8], ["health_potion", 6, 1, 2], ["dynamite", 5, 1, 3]]},
+    {"rolls": [3, 5], "coins": [120, 400], "entries": [["iron_ore", 20, 3, 6], ["silver_ore", 16, 2, 5], ["gold_ore", 8, 1, 3], ["geode_iron", 8, 1, 2], ["dynamite", 8, 2, 4], ["health_potion", 6, 1, 2], ["fossil_trilobite", 2, 1, 1], ["recall_flare", 3, 1, 1]]},
+    {"rolls": [3, 5], "coins": [400, 1000], "entries": [["amethyst", 18, 1, 3], ["sapphire", 14, 1, 2], ["emerald", 12, 1, 2], ["ruby", 10, 1, 2], ["crystal_shard", 16, 2, 5], ["geode_rare", 8, 1, 1], ["recall_flare", 4, 1, 2]]},
+    {"rolls": [3, 5], "coins": [800, 2000], "entries": [["frost_crystal", 18, 1, 3], ["blue_sapphire", 10, 1, 2], ["opal", 8, 1, 1], ["geode_ice", 8, 1, 1], ["frozen_iron", 16, 2, 5], ["recall_flare", 5, 1, 2], ["health_potion", 6, 2, 3]]},
+    {"rolls": [3, 5], "coins": [1500, 4000], "entries": [["magma_crystal", 16, 1, 2], ["emberstone", 14, 1, 2], ["volcanic_iron", 18, 2, 4], ["obsidian", 16, 2, 5], ["geode_magma", 8, 1, 1], ["diamond", 0.6, 1, 1]]},
+    {"rolls": [4, 6], "coins": [3000, 8000], "entries": [["ancient_gold", 18, 1, 3], ["relic_fragment", 16, 1, 2], ["ancient_shard", 20, 2, 4], ["star_crystal", 1.2, 1, 1], ["artifact_gear", 1.2, 1, 1], ["geode_legendary", 5, 1, 1]]}
+  ]
+}

@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/skill_node.gd" id="1_node"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[node name="SkillNode" type="Control"]
+custom_minimum_size = Vector2(52, 60)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 52.0
+offset_bottom = 60.0
+pivot_offset = Vector2(26, 30)
+mouse_filter = 2
+script = ExtResource("1_node")
+
+[node name="Glow" type="Control" parent="."]
+show_behind_parent = true
+material = SubResource("CanvasItemMaterial_add")
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2

@@ -1,0 +1,171 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/panels/map_panel.gd" id="1_map"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_normal.png" id="2_cn"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_hover.png" id="3_ch"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_pressed.png" id="4_cp"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel_big.fnt" id="5_big"]
+
+[node name="MapPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_map")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.08, 0.6)
+
+[node name="Window" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -206.0
+offset_top = -160.0
+offset_right = 206.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Window"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleRow" type="HBoxContainer" parent="Window/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleIcon" type="TextureRect" parent="Window/VBox/TitleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 2
+
+[node name="Title" type="Label" parent="Window/VBox/TitleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LabelHeader"
+text = "Map"
+
+[node name="CloseButton" type="TextureButton" parent="Window/VBox/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+texture_normal = ExtResource("2_cn")
+texture_pressed = ExtResource("4_cp")
+texture_hover = ExtResource("3_ch")
+
+[node name="MapFrame" type="PanelContainer" parent="Window/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"PanelDark"
+
+[node name="MapView" type="Control" parent="Window/VBox/MapFrame"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(380, 226)
+layout_mode = 2
+mouse_default_cursor_shape = 6
+
+[node name="ZoomBox" type="VBoxContainer" parent="Window/VBox/MapFrame/MapView"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 74.0
+theme_override_constants/separation = 2
+
+[node name="ZoomIn" type="Button" parent="Window/VBox/MapFrame/MapView/ZoomBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 20)
+layout_mode = 2
+tooltip_text = "Zoom in (+)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "+"
+
+[node name="ZoomOut" type="Button" parent="Window/VBox/MapFrame/MapView/ZoomBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 20)
+layout_mode = 2
+tooltip_text = "Zoom out (-)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "-"
+
+[node name="CenterButton" type="Button" parent="Window/VBox/MapFrame/MapView/ZoomBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 20)
+layout_mode = 2
+tooltip_text = "Center on you (C)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "@"
+
+[node name="InfoLabel" type="Label" parent="Window/VBox/MapFrame/MapView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = -16.0
+offset_right = 300.0
+offset_bottom = -4.0
+grow_vertical = 0
+theme_type_variation = &"LabelSmall"
+text = "Drag to pan  •  Scroll to zoom"
+
+[node name="BottomRow" type="HBoxContainer" parent="Window/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DepthIcon" type="TextureRect" parent="Window/VBox/BottomRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 2
+
+[node name="DepthLabel" type="Label" parent="Window/VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"LabelHeader"
+text = "Depth: 120m"
+
+[node name="BiomeLabel" type="Label" parent="Window/VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"LabelSmall"
+text = "Stone Caverns"
+
+[node name="HintLabel" type="Label" parent="Window/VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"LabelDim"
+horizontal_alignment = 2
+
+[node name="TravelButton" type="Button" parent="Window/VBox/BottomRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 26)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_big")
+theme_override_font_sizes/font_size = 16
+text = "Travel"

@@ -1,0 +1,12 @@
+# Godot cache / imported data (regenerated automatically when the project is opened)
+.godot/
+**/.godot/
+
+# Exported builds (published as GitHub release assets instead)
+builds/
+
+# Misc
+*.tmp
+export_credentials.cfg
+.DS_Store
+Thumbs.db

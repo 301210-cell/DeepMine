@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/main/boot.gd" id="1_s"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/logo.png" id="2_logo"]
+
+[node name="Boot" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_s")
+
+[node name="Bg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027, 0.039, 0.094, 1)
+
+[node name="Logo" type="TextureRect" parent="."]
+unique_name_in_owner = true
+clip_children = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -80.0
+offset_right = 200.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_logo")
+
+[node name="Shine" type="ColorRect" parent="Logo"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -60.0
+offset_top = -10.0
+offset_right = -48.0
+offset_bottom = 140.0
+rotation = 0.35
+color = Color(1, 1, 1, 0.35)
+
+[node name="MadeWith" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = 60.0
+offset_right = 150.0
+offset_bottom = 74.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"LabelDim"
+text = "made with Godot Engine"
+horizontal_alignment = 1

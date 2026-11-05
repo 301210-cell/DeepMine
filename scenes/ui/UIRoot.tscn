@@ -1,0 +1,115 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/ui_root.gd" id="1_root"]
+[ext_resource type="Theme" path="res://assets/ui/theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="3_hud"]
+[ext_resource type="Script" path="res://scripts/ui/overlay/toast_stack.gd" id="4_toast"]
+[ext_resource type="Script" path="res://scripts/ui/overlay/event_banner.gd" id="5_banner"]
+[ext_resource type="Script" path="res://scripts/ui/overlay/dialogue_box.gd" id="6_dialog"]
+[ext_resource type="Script" path="res://scripts/ui/overlay/geode_popup.gd" id="7_geode"]
+[ext_resource type="Script" path="res://scripts/ui/overlay/confirm_dialog.gd" id="8_confirm"]
+
+[node name="UIRoot" type="CanvasLayer"]
+process_mode = 3
+layer = 10
+script = ExtResource("1_root")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="HUD" parent="Root" instance=ExtResource("3_hud")]
+layout_mode = 1
+
+[node name="Dim" type="ColorRect" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.08, 0.55)
+
+[node name="PanelHost" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Overlay" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Toasts" type="VBoxContainer" parent="Root/Overlay"]
+layout_mode = 0
+mouse_filter = 2
+script = ExtResource("4_toast")
+
+[node name="EventBanner" type="Control" parent="Root/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_banner")
+
+[node name="Dialogue" type="Control" parent="Root/Overlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_dialog")
+
+[node name="GeodePopup" type="Control" parent="Root/Overlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("7_geode")
+
+[node name="Confirm" type="Control" parent="Root/Overlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_confirm")
+
+[node name="Fade" type="ColorRect" parent="Root/Overlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.02, 0.05, 0)

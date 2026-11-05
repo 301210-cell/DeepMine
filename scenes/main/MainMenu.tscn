@@ -1,0 +1,342 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/main/main_menu.gd" id="1_s"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel_big.fnt" id="13_big"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/menu_far.png" id="10_far"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/menu_main.png" id="11_main"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/logo.png" id="12_logo"]
+
+[sub_resource type="Gradient" id="g_glow"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 0.72, 0.32, 0.75, 1, 0.45, 0.12, 0)
+
+[sub_resource type="GradientTexture2D" id="gt_glow"]
+gradient = SubResource("g_glow")
+width = 48
+height = 48
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="g_crys"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.45, 0.8, 1, 0.45, 0.3, 0.5, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="gt_crys"]
+gradient = SubResource("g_crys")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="g_crys2"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.75, 0.45, 1, 0.45, 0.55, 0.25, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="gt_crys2"]
+gradient = SubResource("g_crys2")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="CanvasItemMaterial" id="mat_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="g_vig"]
+offsets = PackedFloat32Array(0.5, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.01, 0.01, 0.05, 0.72)
+
+[sub_resource type="GradientTexture2D" id="gt_vig"]
+gradient = SubResource("g_vig")
+width = 160
+height = 90
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1.08, 1.08)
+
+[sub_resource type="Gradient" id="g_spark"]
+offsets = PackedFloat32Array(0, 0.2, 1)
+colors = PackedColorArray(0.7, 0.95, 1, 0, 0.8, 0.97, 1, 1, 0.6, 0.8, 1, 0)
+
+[sub_resource type="Gradient" id="g_dust"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(1, 0.9, 0.7, 0, 1, 0.9, 0.7, 0.5, 1, 0.9, 0.7, 0)
+
+[sub_resource type="Gradient" id="g_shade"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.02, 0.03, 0.08, 0.82, 0.02, 0.03, 0.08, 0)
+
+[sub_resource type="GradientTexture2D" id="gt_shade"]
+gradient = SubResource("g_shade")
+width = 64
+height = 8
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_s")
+
+[node name="Bg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.043, 0.063, 0.149, 1)
+
+[node name="Stage" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+
+[node name="Far" type="TextureRect" parent="Stage"]
+layout_mode = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+texture = ExtResource("10_far")
+
+[node name="CrystalGlowL" type="Sprite2D" parent="Stage"]
+material = SubResource("mat_add")
+position = Vector2(80, 290)
+scale = Vector2(1.6, 1.4)
+texture = SubResource("gt_crys")
+
+[node name="CrystalGlowR" type="Sprite2D" parent="Stage"]
+material = SubResource("mat_add")
+position = Vector2(585, 290)
+scale = Vector2(1.4, 1.4)
+texture = SubResource("gt_crys2")
+
+[node name="Main" type="TextureRect" parent="Stage"]
+layout_mode = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+texture = ExtResource("11_main")
+
+[node name="Glows" type="Node2D" parent="Stage"]
+unique_name_in_owner = true
+
+[node name="G1" type="Sprite2D" parent="Stage/Glows"]
+material = SubResource("mat_add")
+position = Vector2(206, 220)
+texture = SubResource("gt_glow")
+
+[node name="G2" type="Sprite2D" parent="Stage/Glows"]
+material = SubResource("mat_add")
+position = Vector2(273, 251)
+texture = SubResource("gt_glow")
+
+[node name="G3" type="Sprite2D" parent="Stage/Glows"]
+material = SubResource("mat_add")
+position = Vector2(369, 251)
+texture = SubResource("gt_glow")
+
+[node name="G4" type="Sprite2D" parent="Stage/Glows"]
+material = SubResource("mat_add")
+position = Vector2(172, 261)
+scale = Vector2(0.7, 0.7)
+texture = SubResource("gt_glow")
+
+[node name="G5" type="Sprite2D" parent="Stage/Glows"]
+material = SubResource("mat_add")
+position = Vector2(509, 270)
+scale = Vector2(0.8, 0.8)
+texture = SubResource("gt_glow")
+
+[node name="G6" type="Sprite2D" parent="Stage/Glows"]
+material = SubResource("mat_add")
+position = Vector2(320, 278)
+scale = Vector2(1.5, 1.2)
+texture = SubResource("gt_glow")
+
+[node name="Sparkles" type="CPUParticles2D" parent="Stage"]
+position = Vector2(320, 260)
+amount = 40
+lifetime = 2.6
+preprocess = 3.0
+emission_shape = 3
+emission_rect_extents = Vector2(320, 90)
+direction = Vector2(0, -1)
+spread = 30.0
+gravity = Vector2(0, -6)
+initial_velocity_min = 2.0
+initial_velocity_max = 8.0
+scale_amount_min = 1.0
+scale_amount_max = 2.0
+color_ramp = SubResource("g_spark")
+
+[node name="Dust" type="CPUParticles2D" parent="Stage"]
+position = Vector2(320, 180)
+amount = 30
+lifetime = 6.0
+preprocess = 6.0
+emission_shape = 3
+emission_rect_extents = Vector2(330, 180)
+direction = Vector2(1, -0.3)
+spread = 40.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 7.0
+color_ramp = SubResource("g_dust")
+
+[node name="Cart" type="Sprite2D" parent="Stage"]
+unique_name_in_owner = true
+position = Vector2(500, 340)
+offset = Vector2(0, -24)
+
+[node name="Logo" type="TextureRect" parent="Stage"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 120.0
+offset_top = 6.0
+offset_right = 520.0
+offset_bottom = 134.0
+mouse_filter = 2
+texture = ExtResource("12_logo")
+
+[node name="Vignette" type="TextureRect" parent="Stage"]
+texture_filter = 2
+layout_mode = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+texture = SubResource("gt_vig")
+expand_mode = 1
+
+[node name="LeftShade" type="TextureRect" parent="."]
+texture_filter = 2
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 220.0
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("gt_shade")
+expand_mode = 1
+
+[node name="MenuBox" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 18.0
+offset_top = -38.0
+offset_right = 150.0
+offset_bottom = 150.0
+grow_vertical = 2
+theme_override_constants/separation = 5
+
+[node name="ContinueButton" type="Button" parent="MenuBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 26)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("13_big")
+theme_override_font_sizes/font_size = 16
+text = "Continue"
+
+[node name="ContinueInfo" type="Label" parent="MenuBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelSmall"
+text = "No saved game"
+horizontal_alignment = 1
+
+[node name="NewButton" type="Button" parent="MenuBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 26)
+layout_mode = 2
+theme_type_variation = &"ButtonGreen"
+theme_override_fonts/font = ExtResource("13_big")
+theme_override_font_sizes/font_size = 16
+text = "New Game"
+
+[node name="SettingsButton" type="Button" parent="MenuBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 24)
+layout_mode = 2
+theme_type_variation = &"ButtonDark"
+text = "Settings"
+
+[node name="CreditsButton" type="Button" parent="MenuBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 24)
+layout_mode = 2
+theme_type_variation = &"ButtonDark"
+text = "Credits"
+
+[node name="QuitButton" type="Button" parent="MenuBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 24)
+layout_mode = 2
+theme_type_variation = &"ButtonDark"
+text = "Quit"
+
+[node name="ErrorLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 122.0
+offset_right = 220.0
+offset_bottom = 136.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.48, 0.42, 1)
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="VersionLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -14.0
+offset_right = -6.0
+offset_bottom = -3.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_type_variation = &"LabelDim"
+text = "v1.0.0"
+horizontal_alignment = 2
+
+[node name="Overlay" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

@@ -1,0 +1,577 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/skill_tree_panel.gd" id="1_panel"]
+[ext_resource type="Script" path="res://scripts/skills/skill_connections.gd" id="2_conn"]
+[ext_resource type="Texture2D" path="res://assets/ui/skilltree_bg.png" id="3_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_normal.png" id="4_cn"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_hover.png" id="5_ch"]
+[ext_resource type="Texture2D" path="res://assets/ui/close_pressed.png" id="6_cp"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fx"]
+blend_mode = 1
+
+[node name="SkillTreePanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_panel")
+
+[node name="Background" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BgColor" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.043, 0.063, 0.149, 1)
+
+[node name="BgTile" type="TextureRect" parent="Background"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+stretch_mode = 1
+
+[node name="Vignette" type="TextureRect" parent="Background"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+
+[node name="TreeViewport" type="Control" parent="."]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 38.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TreeCanvas" type="Control" parent="TreeViewport"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="ConnectionLines" type="Control" parent="TreeViewport/TreeCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("2_conn")
+
+[node name="BranchLabels" type="Control" parent="TreeViewport/TreeCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="SkillNodes" type="Control" parent="TreeViewport/TreeCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Fx" type="Control" parent="TreeViewport/TreeCanvas"]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_fx")
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Header" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_type_variation = &"PanelDark"
+
+[node name="HBox" type="HBoxContainer" parent="Header"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleIcon" type="TextureRect" parent="Header/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="Header/HBox"]
+layout_mode = 2
+theme_type_variation = &"LabelTitle"
+text = "SKILL TREE"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LevelLabel" type="Label" parent="Header/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelDim"
+text = "LEVEL 1"
+vertical_alignment = 1
+
+[node name="SPBox" type="PanelContainer" parent="Header/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"HudBox"
+
+[node name="HBox" type="HBoxContainer" parent="Header/HBox/SPBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="GemIcon" type="TextureRect" parent="Header/HBox/SPBox/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="AvailableSkillPoints" type="Label" parent="Header/HBox/SPBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelGold"
+text = "AVAILABLE SKILL POINTS: 0"
+vertical_alignment = 1
+
+[node name="CloseButton" type="TextureButton" parent="Header/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Close (K / Esc)"
+texture_normal = ExtResource("4_cn")
+texture_pressed = ExtResource("6_cp")
+texture_hover = ExtResource("5_ch")
+
+[node name="BranchFilters" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 8.0
+offset_top = 40.0
+offset_right = 400.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Minimap" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(92, 64)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -98.0
+offset_right = 100.0
+offset_bottom = -34.0
+grow_vertical = 0
+tooltip_text = "Overview: click to jump"
+theme_type_variation = &"PanelDark"
+
+[node name="NavigationControls" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -28.0
+offset_right = 260.0
+offset_bottom = -6.0
+grow_vertical = 0
+theme_override_constants/separation = 3
+
+[node name="ZoomIn" type="Button" parent="NavigationControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+tooltip_text = "Zoom in (+)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "+"
+
+[node name="ZoomOut" type="Button" parent="NavigationControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+tooltip_text = "Zoom out (-)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "-"
+
+[node name="FitTree" type="Button" parent="NavigationControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+tooltip_text = "Fit the entire tree (F)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "FIT"
+
+[node name="CenterProgress" type="Button" parent="NavigationControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+tooltip_text = "Center on your progress (C)"
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "CENTER"
+
+[node name="ResetButton" type="Button" parent="NavigationControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+tooltip_text = "Reset all skills (90% refund)"
+focus_mode = 0
+theme_type_variation = &"ButtonRed"
+text = "RESET"
+
+[node name="Hint" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -22.0
+offset_right = 190.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"LabelDim"
+text = "DRAG TO MOVE • SCROLL TO ZOOM • CLICK TO UPGRADE"
+horizontal_alignment = 1
+
+[node name="SkillDetailsPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(236, 0)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -244.0
+offset_top = 62.0
+offset_right = -8.0
+offset_bottom = 200.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="SkillDetailsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Top" type="HBoxContainer" parent="SkillDetailsPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CardArt" type="PanelContainer" parent="SkillDetailsPanel/VBox/Top"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"PanelDark"
+
+[node name="SkillIcon" type="TextureRect" parent="SkillDetailsPanel/VBox/Top/CardArt"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="VBoxContainer" parent="SkillDetailsPanel/VBox/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="SkillName" type="Label" parent="SkillDetailsPanel/VBox/Top/Info"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_type_variation = &"LabelGold"
+text = "SKILL"
+autowrap_mode = 3
+
+[node name="BranchName" type="Label" parent="SkillDetailsPanel/VBox/Top/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelSmall"
+text = "Branch"
+
+[node name="RankRow" type="HBoxContainer" parent="SkillDetailsPanel/VBox/Top/Info"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RankLabel" type="Label" parent="SkillDetailsPanel/VBox/Top/Info/RankRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "RANK 0 / 5"
+
+[node name="RankBar" type="ProgressBar" parent="SkillDetailsPanel/VBox/Top/Info/RankRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 5.0
+step = 1.0
+show_percentage = false
+
+[node name="Description" type="Label" parent="SkillDetailsPanel/VBox/Top/Info"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_type_variation = &"LabelSmall"
+text = "Description"
+autowrap_mode = 3
+
+[node name="Sep" type="HSeparator" parent="SkillDetailsPanel/VBox"]
+layout_mode = 2
+
+[node name="NowLabel" type="RichTextLabel" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="NextLabel" type="RichTextLabel" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="CostRow" type="HBoxContainer" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="CostIcon" type="TextureRect" parent="SkillDetailsPanel/VBox/CostRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="CostLabel" type="RichTextLabel" parent="SkillDetailsPanel/VBox/CostRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="NeedsLabel" type="RichTextLabel" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="UnlockButton" type="Button" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+focus_mode = 0
+mouse_filter = 0
+theme_type_variation = &"ButtonGold"
+text = "UNLOCK"
+
+[node name="MaxedLabel" type="Label" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"LabelTitle"
+text = "MAXED OUT!"
+horizontal_alignment = 1
+
+[node name="ReasonLabel" type="Label" parent="SkillDetailsPanel/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"LabelSmall"
+theme_override_colors/font_color = Color(1, 0.45, 0.45, 1)
+text = "Reason"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Toast" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -50.0
+offset_right = 160.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"LabelGold"
+horizontal_alignment = 1
+
+[node name="Flash" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 0.95, 0.75, 0)
+
+[node name="ResetConfirmation" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="ResetConfirmation"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.08, 0.72)
+
+[node name="ConfirmPanel" type="PanelContainer" parent="ResetConfirmation"]
+custom_minimum_size = Vector2(270, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -135.0
+offset_top = -95.0
+offset_right = 135.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="ResetConfirmation/ConfirmPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ConfirmTitle" type="Label" parent="ResetConfirmation/ConfirmPanel/VBox"]
+layout_mode = 2
+theme_type_variation = &"LabelTitle"
+text = "RESET SKILL TREE?"
+horizontal_alignment = 1
+
+[node name="ConfirmText" type="Label" parent="ResetConfirmation/ConfirmPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+text = "These skills will be reset:"
+autowrap_mode = 3
+
+[node name="ListPanel" type="PanelContainer" parent="ResetConfirmation/ConfirmPanel/VBox"]
+layout_mode = 2
+theme_type_variation = &"PanelDark"
+
+[node name="Scroll" type="ScrollContainer" parent="ResetConfirmation/ConfirmPanel/VBox/ListPanel"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="ConfirmList" type="Label" parent="ResetConfirmation/ConfirmPanel/VBox/ListPanel/Scroll"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(238, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LabelSmall"
+autowrap_mode = 3
+
+[node name="RefundLabel" type="Label" parent="ResetConfirmation/ConfirmPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LabelGold"
+text = "REFUND: 0 SKILL POINTS (90%)"
+horizontal_alignment = 1
+
+[node name="KeepLabel" type="Label" parent="ResetConfirmation/ConfirmPanel/VBox"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+theme_type_variation = &"LabelDim"
+text = "Your level, XP, equipment, coins, Mineral Collection and discoveries are kept."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="ResetConfirmation/ConfirmPanel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="ConfirmResetButton" type="Button" parent="ResetConfirmation/ConfirmPanel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 24)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"ButtonRed"
+text = "RESET SKILLS"
+
+[node name="CancelResetButton" type="Button" parent="ResetConfirmation/ConfirmPanel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 24)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"ButtonDark"
+text = "CANCEL"

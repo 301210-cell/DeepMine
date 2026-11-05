@@ -1,0 +1,6 @@
+; Standalone asset generator project (not part of the game).
+; Run: Godot --headless --path tools/assetgen --script res://gen_xxx.gd
+config_version=5
+
+[application]
+config/name="DeepMine AssetGen"

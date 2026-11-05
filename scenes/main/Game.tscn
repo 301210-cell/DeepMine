@@ -1,0 +1,68 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/main/game.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/world/background.gd" id="2_bg"]
+[ext_resource type="Script" path="res://scripts/world/world_renderer.gd" id="3_renderer"]
+[ext_resource type="Script" path="res://scripts/world/camp.gd" id="4_camp"]
+[ext_resource type="Script" path="res://scripts/world/entities.gd" id="5_entities"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="6_player"]
+[ext_resource type="Script" path="res://scripts/player/mining_controller.gd" id="7_mining"]
+[ext_resource type="Script" path="res://scripts/mining/effects.gd" id="8_effects"]
+[ext_resource type="Script" path="res://scripts/main/game_camera.gd" id="9_camera"]
+[ext_resource type="Script" path="res://scripts/progression/quest_manager.gd" id="10_quests"]
+[ext_resource type="Script" path="res://scripts/progression/tutorial.gd" id="11_tutorial"]
+[ext_resource type="Script" path="res://scripts/progression/event_manager.gd" id="12_events"]
+[ext_resource type="Script" path="res://scripts/progression/achievements.gd" id="13_achievements"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_game")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="Background" type="Node2D" parent="BackgroundLayer"]
+script = ExtResource("2_bg")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Renderer" type="Node2D" parent="World"]
+script = ExtResource("3_renderer")
+
+[node name="Camp" type="Node2D" parent="World"]
+script = ExtResource("4_camp")
+
+[node name="Entities" type="Node2D" parent="World"]
+script = ExtResource("5_entities")
+
+[node name="Pickups" type="Node2D" parent="World"]
+
+[node name="Player" parent="World" instance=ExtResource("6_player")]
+
+[node name="Mining" type="Node2D" parent="World"]
+script = ExtResource("7_mining")
+
+[node name="Effects" type="Node2D" parent="World"]
+script = ExtResource("8_effects")
+
+[node name="Darkness" type="CanvasModulate" parent="."]
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("9_camera")
+
+[node name="GlowLayer" type="CanvasLayer" parent="."]
+layer = 1
+follow_viewport_enabled = true
+
+[node name="Systems" type="Node" parent="."]
+
+[node name="QuestManager" type="Node" parent="Systems"]
+script = ExtResource("10_quests")
+
+[node name="Tutorial" type="Node" parent="Systems"]
+script = ExtResource("11_tutorial")
+
+[node name="EventManager" type="Node" parent="Systems"]
+script = ExtResource("12_events")
+
+[node name="Achievements" type="Node" parent="Systems"]
+script = ExtResource("13_achievements")

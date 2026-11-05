@@ -1,0 +1,44 @@
+{
+  "_doc": "Shop equipment. icon = index into assets/sprites/items/equipment.png. tool_sprite = column in assets/sprites/player/tools.png. tier = strongest block tier the tool can break. power = damage per hit. speed = swings per second multiplier.",
+  "pickaxes": [
+    {"id": "basic_pickaxe", "name": "Basic Pickaxe", "icon": 0, "tool_sprite": 0, "tier": 1, "power": 1.0, "speed": 1.0, "price": 0, "level": 1, "desc": "A worn wooden pickaxe from the old camp."},
+    {"id": "copper_pickaxe", "name": "Copper Pickaxe", "icon": 1, "tool_sprite": 1, "tier": 2, "power": 1.7, "speed": 1.1, "price": 400, "level": 2, "desc": "Breaks Reinforced Stone. Opens the way to the Iron Depths."},
+    {"id": "iron_pickaxe", "name": "Iron Pickaxe", "icon": 2, "tool_sprite": 2, "tier": 3, "power": 2.8, "speed": 1.15, "price": 2500, "level": 6, "desc": "Sturdy iron head. Cracks Iron-Bound Rock."},
+    {"id": "steel_pickaxe", "name": "Steel Pickaxe", "icon": 3, "tool_sprite": 3, "tier": 4, "power": 4.2, "speed": 1.2, "price": 12000, "level": 10, "desc": "Tempered steel. Shatters Crystal Barriers."},
+    {"id": "crystal_pickaxe", "name": "Crystal Pickaxe", "icon": 4, "tool_sprite": 4, "tier": 5, "power": 6.5, "speed": 1.3, "price": 45000, "level": 14, "desc": "Resonates with the rock. Cuts through Permafrost Walls."},
+    {"id": "diamond_drill", "name": "Diamond Drill", "icon": 5, "tool_sprite": 5, "tier": 6, "power": 10.0, "speed": 1.45, "price": 150000, "level": 19, "desc": "A diamond-tipped drill that bores through Magma Shells."},
+    {"id": "plasma_tool", "name": "Plasma Mining Tool", "icon": 6, "tool_sprite": 6, "tier": 7, "power": 16.0, "speed": 1.6, "price": 480000, "level": 24, "desc": "Cuts anything, even Prototype Minerals and Ancient Metal."}
+  ],
+  "drills": [
+    {"id": "portable_drill", "name": "Portable Drill", "icon": 7, "tool_sprite": 7, "power_mult": 0.6, "area": 1, "price": 3500, "level": 7, "desc": "Hotbar tool: damages the target and all 4 neighbours at once."},
+    {"id": "portable_drill_mk2", "name": "Portable Drill Mk II", "icon": 8, "tool_sprite": 7, "power_mult": 0.8, "area": 2, "price": 60000, "level": 16, "desc": "Bigger bit. Damages a 3x3 area."}
+  ],
+  "backpacks": [
+    {"id": "backpack_basic", "name": "Small Backpack", "icon": 9, "slots": 20, "price": 0, "level": 1, "desc": "Holds 20 stacks."},
+    {"id": "backpack_canvas", "name": "Canvas Backpack", "icon": 10, "slots": 28, "price": 1500, "level": 4, "desc": "Holds 28 stacks."},
+    {"id": "backpack_miner", "name": "Miner's Pack", "icon": 11, "slots": 36, "price": 9000, "level": 9, "desc": "Holds 36 stacks."},
+    {"id": "backpack_expedition", "name": "Expedition Rucksack", "icon": 12, "slots": 48, "price": 50000, "level": 15, "desc": "Holds 48 stacks."}
+  ],
+  "lanterns": [
+    {"id": "lantern_basic", "name": "Basic Lantern", "icon": 13, "radius": 88, "price": 0, "level": 1, "color": "ffd89a", "desc": "A dim oil lantern."},
+    {"id": "lantern_brass", "name": "Brass Lantern", "icon": 14, "radius": 120, "price": 500, "level": 3, "color": "ffe2a8", "desc": "Brighter flame, wider light."},
+    {"id": "lantern_crystal", "name": "Crystal Lantern", "icon": 15, "radius": 160, "price": 8000, "level": 9, "color": "bff4ff", "desc": "A crystal core lights the dark in cool blue."},
+    {"id": "lantern_sun", "name": "Sunstone Lantern", "icon": 16, "radius": 210, "price": 70000, "level": 17, "color": "fff3c8", "desc": "Captured sunlight. Nothing stays hidden."}
+  ],
+  "scanners": [
+    {"id": "scanner_mk1", "name": "Mining Scanner", "icon": 17, "range": 14, "min_rarity": 2, "price": 2500, "level": 6, "desc": "Pings Rare or better deposits within 14 tiles."},
+    {"id": "scanner_mk2", "name": "Deep Scanner", "icon": 18, "range": 24, "min_rarity": 1, "price": 40000, "level": 14, "desc": "Pings Uncommon or better deposits within 24 tiles and marks them on the map."}
+  ],
+  "boots": [
+    {"id": "boots_work", "name": "Work Boots", "icon": 19, "speed": 0.0, "grip": 0.0, "heat": false, "fall": 0.0, "jump": 0.0, "price": 0, "level": 1, "desc": "Standard issue."},
+    {"id": "boots_grip", "name": "Grip Boots", "icon": 20, "speed": 0.08, "grip": 0.7, "heat": false, "fall": 0.2, "jump": 0.0, "price": 6000, "level": 8, "desc": "+8% speed. Studded soles grip ice."},
+    {"id": "boots_thermal", "name": "Thermal Boots", "icon": 21, "speed": 0.1, "grip": 0.8, "heat": true, "fall": 0.3, "jump": 0.0, "price": 30000, "level": 13, "desc": "Walk on Magma Crust safely and resist lava. Grips ice."},
+    {"id": "boots_gravity", "name": "Gravity Boots", "icon": 22, "speed": 0.15, "grip": 1.0, "heat": true, "fall": 1.0, "jump": 0.15, "price": 200000, "level": 22, "desc": "No fall damage, higher jumps, heat proof."}
+  ],
+  "cosmetics": [
+    {"id": "helmet_crown", "name": "Prospector's Crown", "icon": 32, "desc": "Awarded for completing the Mineral Collection."},
+    {"id": "lantern_skin_aurora", "name": "Aurora Lantern Glow", "icon": 33, "desc": "Collection reward: your lantern glows with shifting aurora colours."},
+    {"id": "pickaxe_charm", "name": "Gem Charm", "icon": 34, "desc": "Collection reward: a sparkling gem charm on your pickaxe."},
+    {"id": "golden_pickaxe_skin", "name": "Golden Finish", "icon": 35, "desc": "Legendary collection reward: +10% mining power and a golden pickaxe."}
+  ]
+}
