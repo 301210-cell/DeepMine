@@ -196,7 +196,7 @@ func _build_quests() -> void:
 			mv.add_child(head2)
 			mv.add_child(_label(String(q.get("text", "")), "", true))
 			var cnt2 := int(q.get("count", 1))
-			var prog2 := int(qs.get("main_progress", 0))
+			var prog2: int = load("res://scripts/progression/quest_manager.gd").state_progress(q, int(qs.get("main_progress", 0)))
 			var txt := ("%sm / %sm" % [ResourceDatabase.fmt_num(mini(prog2, cnt2)), ResourceDatabase.fmt_num(cnt2)]) if q.get("type", "") == "reach_depth" else "%s / %s" % [ResourceDatabase.fmt_num(mini(prog2, cnt2)), ResourceDatabase.fmt_num(cnt2)]
 			mv.add_child(_bar(prog2, cnt2, "ProgressGold", txt))
 			var rw := _hbox()
