@@ -88,6 +88,17 @@ var _card_initials: Label
 func _ready() -> void:
 	if _needs_theme():
 		theme = UiTheme.get_theme()
+	# legible hint strip: dark backing so it never blends into branch labels behind it
+	var hs := StyleBoxFlat.new()
+	hs.bg_color = Color(0.03, 0.04, 0.1, 0.78)
+	hs.set_corner_radius_all(3)
+	hs.content_margin_left = 6
+	hs.content_margin_right = 6
+	hs.content_margin_top = 1
+	hs.content_margin_bottom = 1
+	hint.add_theme_stylebox_override("normal", hs)
+	hint.offset_left += 56.0
+	hint.offset_right += 56.0
 	var have_ui_icons := ResourceLoader.exists(ResourceDatabase.PATH_UI_ICONS)
 	%TitleIcon.texture = ResourceDatabase.ui_icon(12) if have_ui_icons else _gem_texture(Color(0.35, 0.85, 1.0))
 	%GemIcon.texture = ResourceDatabase.ui_icon(1) if have_ui_icons else _gem_texture(Color(0.72, 0.42, 1.0))

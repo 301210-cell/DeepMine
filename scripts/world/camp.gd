@@ -31,10 +31,19 @@ func build(p_game) -> void:
 	var light_tex: Texture2D = load("res://scripts/world/world_renderer.gd").make_radial_texture(256, 0.0)
 
 	# --- scenery behind buildings (trees, fences)
-	for x in [40.0, 200.0, 1720.0, 1800.0, 1900.0, 2050.0, 2240.0, 2400.0, 2600.0, 2780.0, 2950.0]:
-		_tree(x)
-	for x in range(1700, 3060, 90):
-		_prop(17 if (x / 90) % 5 == 0 else (9 if (x / 90) % 3 == 0 else 8), float(x) + 30.0, 0)
+	for x in [40.0, 200.0]:
+		_tree(x, 0.0)
+	# Pines, bushes and rocks along the top of the hill the mine is dug into.
+	var hx := 1760.0
+	var hi := 0
+	while hx < 3040.0:
+		var gy := _ground_y(hx)
+		if hi % 3 != 1:
+			_tree(hx, gy)
+		else:
+			_prop(9 if hi % 2 == 0 else 8, hx, gy)
+		hx += 70.0 + float((hi * 37) % 60)
+		hi += 1
 	# --- buildings
 	_building("mara_tent", "res://assets/sprites/world/mara_tent.png", 860.0, 1, "", Callable())
 	_building("shop", "res://assets/sprites/world/shop.png", 1360.0, 1, "Open Shop", func(_p): Events.open_panel_requested.emit("shop", null))
@@ -44,7 +53,7 @@ func build(p_game) -> void:
 	_building("museum", "res://assets/sprites/world/museum.png", 680.0, 1, "Mineral Collection", func(_p): Events.open_panel_requested.emit("journal", "collection"))
 	# Mine entrance (decorative portal over the stair opening)
 	var ent := _sprite("res://assets/sprites/world/mine_entrance.png", Vector2(ENTRANCE_X, 0), 1)
-	ent.z_index = 1
+	ent.z_index = 0   # the player walks in front of the portal, the hill stops him at the doorway
 	var door := Interactable.new()
 	door.setup("Enter the Mine", Vector2(56, 44), Vector2(0, ent.texture.get_height() * 0.5 - 22.0), func(_p): game.enter_mine())
 	ent.add_child(door)
@@ -100,7 +109,7 @@ func build(p_game) -> void:
 	_prop(21, 640.0, 0, 12) # crystal rock display
 	for i in 4:
 		_flag(250.0 + i * 260.0, 3 + i * 2)
-	_prop(15, ENTRANCE_X + 70, 0) # MINE sign
+	_prop(15, ENTRANCE_X - 66, 0) # MINE sign
 	for x in range(40, 120, 16):
 		_prop(5, float(x), 0)
 	_update_growth()
@@ -145,9 +154,9 @@ func _anim_prop(first: int, frames: int, fps: float, bottom: Vector2) -> Sprite2
 	_anim_sprites.append([s, frames, fps, first])
 	return s
 
-func _tree(x: float) -> void:
-	var bottom := _prop(7, x, 0)
-	var t := _prop(6, x, -32)
+func _tree(x: float, ground: float = 0.0) -> void:
+	var bottom := _prop(7, x, ground)
+	var t := _prop(6, x, ground - 32.0)
 	bottom.z_index = -1
 	t.z_index = -1
 
@@ -206,3 +215,10 @@ func _process(delta: float) -> void:
 		mara.flip_h = false
 	var fps := 5.0 if row == 0 else 8.0
 	mara.frame = row * 4 + int(_t * fps) % 4
+
+## Height of the ground surface at world x (the hill rises above row 0 east of the camp).
+func _ground_y(x: float) -> float:
+	if game == null or game.world == null:
+		return 0.0
+	var col := clampi(int(x / 16.0), 0, game.world.W - 1)
+	return float(mini(int(game.world.hill_top[col]), 0) * 16)

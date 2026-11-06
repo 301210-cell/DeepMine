@@ -3,8 +3,8 @@ extends Node
 ## Systems change state only through these methods; every change emits an Events signal.
 
 const SAVE_VERSION := 1
-const BASE_SWING_RATE := 2.4      # swings per second with speed 1.0
-const BASE_MOVE_SPEED := 92.0     # px/s walking
+const BASE_SWING_RATE := 2.8      # swings per second with speed 1.0
+const BASE_MOVE_SPEED := 98.0     # px/s walking
 const BASE_JUMP_VELOCITY := 292.0 # px/s
 const BASE_PICKUP_RADIUS := 46.0
 const BASE_STACK := 99
@@ -240,7 +240,7 @@ func spend_coins(n: int) -> bool:
 	return true
 
 static func xp_needed_for(lvl: int) -> int:
-	return int(40.0 * pow(float(lvl), 1.45)) + 20
+	return int(28.0 * pow(float(lvl), 1.38)) + 16
 
 func xp_needed() -> int:
 	return xp_needed_for(level)
@@ -257,7 +257,7 @@ func add_xp(amount: float, apply_mult: bool = true) -> void:
 		if level >= 2:
 			skill_points += 1
 			Events.skill_points_changed.emit(skill_points)
-		var bonus := 25 * level
+		var bonus := 40 * level
 		add_coins(bonus)
 		Events.level_up.emit(level)
 		_set_counter("level", level)

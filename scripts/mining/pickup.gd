@@ -20,6 +20,7 @@ var _sprite: Sprite2D
 var _glint: Sprite2D
 var _rarity := 0
 var _spin := 0.0
+var _trail: Array[Vector2] = []
 
 func setup(id: String, n: int, pos: Vector2, v: Vector2) -> void:
 	item_id = id
@@ -60,6 +61,10 @@ func _physics_process(delta: float) -> void:
 	if player and _age > 0.28 and _refuse_t <= 0.0 and d < radius:
 		_magnet = true
 	if _magnet and player:
+		_trail.push_front(global_position)
+		if _trail.size() > 5:
+			_trail.pop_back()
+		queue_redraw()
 		var dir := (target - global_position).normalized()
 		var spd := lerpf(120.0, 420.0, clampf(1.0 - d / maxf(radius, 1.0), 0.0, 1.0)) + _age * 40.0
 		vel = vel.lerp(dir * spd, 1.0 - exp(-10.0 * delta))
@@ -131,3 +136,12 @@ func _refuse() -> void:
 
 func to_dict() -> Dictionary:
 	return {"id": item_id, "n": amount, "x": global_position.x, "y": global_position.y}
+
+func _draw() -> void:
+	## Short glowing trail while the drop flies into the backpack.
+	if not _magnet or _trail.size() < 2:
+		return
+	var col := ResourceDatabase.rarity_color(_rarity).lightened(0.35)
+	for i in _trail.size() - 1:
+		var a := 0.45 * (1.0 - float(i) / _trail.size())
+		draw_line(_trail[i] - global_position, _trail[i + 1] - global_position, Color(col.r, col.g, col.b, a), 2.0 - i * 0.3)

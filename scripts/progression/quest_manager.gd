@@ -185,5 +185,5 @@ func _update_hud() -> void:
 			ptxt = "%dm/%dm" % [mini(prog, count), count]
 		elif m.type == "own_equipment":
 			ptxt = ""
-		qs["hud"] = {"title": "Main Quest", "text": m.title + ": " + m.text, "progress": ptxt, "short": m.text}
+		qs["hud"] = {"title": "Main Quest", "text": m.title + ": " + m.text, "progress": ptxt, "short": String(m.get("short", m.title))}
 	Events.quest_progress.emit("hud")

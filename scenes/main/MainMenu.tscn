@@ -1,11 +1,13 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main_menu.gd" id="1_menu"]
 [ext_resource type="Script" path="res://scripts/main/menu_backdrop.gd" id="2_backdrop"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel_big.fnt" id="3_big"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel.fnt" id="4_small"]
 
 [sub_resource type="Gradient" id="Gradient_shade"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.02, 0.03, 0.09, 0, 0.02, 0.03, 0.09, 0.82)
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.02, 0.02, 0.06, 0, 0.02, 0.02, 0.06, 0.55, 0.02, 0.02, 0.06, 0.8)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_shade"]
 gradient = SubResource("Gradient_shade")
@@ -38,15 +40,14 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -84.0
+offset_top = -92.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 texture = SubResource("GradientTexture2D_shade")
 expand_mode = 1
-stretch_mode = 0
 
-[node name="MenuBox" type="VBoxContainer" parent="."]
+[node name="MenuPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -54,66 +55,78 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -145.0
-offset_top = -70.0
-offset_right = 55.0
-offset_bottom = -6.0
+offset_left = -138.0
+offset_top = -80.0
+offset_right = 138.0
+offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 4
-alignment = 2
 
-[node name="TopRow" type="HBoxContainer" parent="MenuBox"]
+[node name="MenuBox" type="VBoxContainer" parent="MenuPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="TopRow" type="HBoxContainer" parent="MenuPanel/MenuBox"]
 layout_mode = 2
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="ContinueButton" type="Button" parent="MenuBox/TopRow"]
+[node name="ContinueButton" type="Button" parent="MenuPanel/MenuBox/TopRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(96, 26)
+custom_minimum_size = Vector2(118, 26)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_big")
+theme_override_font_sizes/font_size = 16
 text = "Continue"
 
-[node name="NewButton" type="Button" parent="MenuBox/TopRow"]
+[node name="NewButton" type="Button" parent="MenuPanel/MenuBox/TopRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(96, 26)
+custom_minimum_size = Vector2(118, 26)
 layout_mode = 2
-theme_type_variation = &"ButtonGreen"
+theme_override_fonts/font = ExtResource("3_big")
+theme_override_font_sizes/font_size = 16
 text = "New Game"
 
-[node name="BottomRow" type="HBoxContainer" parent="MenuBox"]
+[node name="BottomRow" type="HBoxContainer" parent="MenuPanel/MenuBox"]
 layout_mode = 2
 theme_override_constants/separation = 5
 alignment = 1
 
-[node name="SettingsButton" type="Button" parent="MenuBox/BottomRow"]
+[node name="SettingsButton" type="Button" parent="MenuPanel/MenuBox/BottomRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(62, 20)
+custom_minimum_size = Vector2(76, 20)
 layout_mode = 2
-theme_type_variation = &"ButtonDark"
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
 text = "Settings"
 
-[node name="CreditsButton" type="Button" parent="MenuBox/BottomRow"]
+[node name="CreditsButton" type="Button" parent="MenuPanel/MenuBox/BottomRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(62, 20)
+custom_minimum_size = Vector2(76, 20)
 layout_mode = 2
-theme_type_variation = &"ButtonDark"
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
 text = "Credits"
 
-[node name="QuitButton" type="Button" parent="MenuBox/BottomRow"]
+[node name="QuitButton" type="Button" parent="MenuPanel/MenuBox/BottomRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(62, 20)
+custom_minimum_size = Vector2(76, 20)
 layout_mode = 2
-theme_type_variation = &"ButtonDark"
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
 text = "Quit"
 
-[node name="ContinueInfo" type="Label" parent="MenuBox"]
+[node name="ContinueInfo" type="Label" parent="MenuPanel/MenuBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"LabelSmall"
-theme_override_colors/font_color = Color(0.78, 0.84, 1, 0.9)
+theme_override_colors/font_color = Color(0.74, 0.8, 1, 0.9)
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
 text = "No saved game yet"
 horizontal_alignment = 1
+clip_text = true
 
 [node name="ErrorLabel" type="Label" parent="."]
 unique_name_in_owner = true
@@ -125,12 +138,15 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -220.0
-offset_top = -96.0
+offset_top = -100.0
 offset_right = 220.0
-offset_bottom = -78.0
+offset_bottom = -84.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.55, 0.5, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.06, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -145,8 +161,9 @@ offset_top = -16.0
 offset_right = 200.0
 offset_bottom = -3.0
 grow_vertical = 0
-theme_type_variation = &"LabelSmall"
-theme_override_colors/font_color = Color(0.7, 0.76, 0.95, 0.75)
+theme_override_colors/font_color = Color(0.72, 0.78, 0.98, 0.7)
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
 text = "DEEPMINE  v1.0"
 
 [node name="Overlay" type="Control" parent="."]

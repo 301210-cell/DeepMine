@@ -186,6 +186,7 @@ func _buy_equipment(id: String) -> void:
 		error(why)
 		return
 	AudioManager.play("coin", -4.0)
+	fx_purchase(ResourceDatabase.equip_icon(id))
 	toast("Bought %s!" % ResourceDatabase.equip(id).get("name", id), "good")
 	refresh()
 
@@ -208,6 +209,7 @@ func _buy_item(id: String, n: int) -> void:
 		error(why)
 		return
 	AudioManager.play("coin", -4.0)
+	fx_purchase(ResourceDatabase.item_icon(id), "+%d %s" % [n, ResourceDatabase.item_name(id)])
 	refresh()
 
 func _machine_row(mid: String) -> void:
@@ -239,6 +241,7 @@ func _machine_row(mid: String) -> void:
 			error(w)
 		else:
 			AudioManager.play("coin", -4.0)
+			fx_purchase(ResourceDatabase.machine_icon(mid), "Built!", false)
 			toast("%s built at the camp!" % m.name, "good")
 			refresh(), 70, "buy")
 	if GameState.coins < int(m.get("price", 0)):

@@ -58,6 +58,7 @@ func _ready() -> void:
 		spawn = GameState.player_pos
 	player.global_position = spawn
 	player.moved_cell.connect(_on_player_cell)
+	player.interact_pressed.connect(_on_player_interact)
 	camera.target = player
 	camera.global_position = spawn + Vector2(0, -20)
 	camera.reset_smoothing()
@@ -282,6 +283,11 @@ func _arrow_pos() -> Variant:
 	return null
 
 func _update_arrow(delta: float) -> void:
+	# Arrows on blocks (tutorial_stone / tutorial_copper) disappear as soon as that block is mined.
+	if _arrow_target.begins_with("tutorial_") and world.markers.has(_arrow_target):
+		var m: Vector2i = world.markers[_arrow_target]
+		if not world.is_solid(m.x, m.y):
+			_arrow_target = ""
 	var p: Variant = _arrow_pos()
 	_arrow.visible = p != null
 	if p != null:
@@ -376,6 +382,7 @@ func _on_elevator_travel(idx: int) -> void:
 		dest = Vector2(camp.ELEVATOR_X + 4, -0.5)
 	await _teleport(dest, "", 0.55)
 	entities.animate_doors(idx, true)
+	effects.dust(player.global_position + Vector2(0, -2), 8)
 	AudioManager.play("elevator_ding", -2.0)
 	Events.elevator_used.emit(idx)
 	GameState.add_counter("elevator", 1)
@@ -550,6 +557,13 @@ func _capture_setup(args: Array) -> void:
 	for b in ResourceDatabase.biomes:
 		if b.key == where:
 			bi = int(b.index)
+	if where == "entrance":
+		var ep := Vector2(camp.ENTRANCE_X - 60.0, -0.5)
+		player.global_position = ep
+		renderer.force_load_around(ep, get_viewport_rect().size)
+		camera.global_position = ep + Vector2(60, -40)
+		_on_player_cell(WD.cell_of(ep + Vector2(0, -8)))
+		return
 	if where == "water":
 		for y in range(20, 150):
 			for x in range(20, WD.W - 20):
@@ -755,6 +769,7 @@ func _show_area_title(title: String, sub: String) -> void:
 func enter_mine() -> void:
 	if _travelling or not world.markers.has("mine_inside"):
 		return
+	point_arrow_at("")
 	_travelling = true
 	player.input_enabled = false
 	if ui and ui.has_method("close_panel"):
@@ -849,6 +864,8 @@ func _build_world_bounds() -> void:
 	$World.add_child(body)
 
 func _patch_old_world() -> void:
+	if world.hill_top[WD.W - 2] == 0:
+		load("res://scripts/world/world_gen.gd").build_hill(world, world.world_seed)
 	## Saves made before v1.1 had an open staircase pit under the MINE portal: seal it.
 	if world.markers.has("mine_inside"):
 		return
@@ -859,3 +876,12 @@ func _patch_old_world() -> void:
 				world.set_block(x, y, ResourceDatabase.DIRT)
 	world.markers["mine_inside"] = Vector2i(WD.SHAFT_X1 + 3, 9)
 	world.set_decor(WD.SHAFT_X1 + 2, 9, 34)
+
+func _on_player_interact(target) -> void:
+	## Interacting with whatever the tutorial arrow points at (Mara, a building, a machine,
+	## the elevator) means the player found it, so the arrow goes away.
+	var p: Variant = _arrow_pos()
+	if p == null or not (target is Node2D):
+		return
+	if (target as Node2D).global_position.distance_to(p as Vector2) < 110.0:
+		_arrow_target = ""

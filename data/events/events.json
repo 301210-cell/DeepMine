@@ -4,27 +4,27 @@
   "events": [
     {"id": "crystal_surge", "name": "Crystal Surge", "icon": 0, "duration": 300, "weight": 10, "color": "7a5cff",
      "desc": "More rare crystals are appearing in the deeper mines!", "effect": {"type": "spawn_deposits", "count": 16},
-     "quest": {"text": "Mine 8 crystal or gem deposits", "type": "mine_gem", "count": 8}, "reward_coins": 400, "reward_xp": 200},
+     "quest": {"text": "Mine 6 crystal or gem deposits", "type": "mine_gem", "count": 6}, "reward_coins": 400, "reward_xp": 200},
     {"id": "geode_fever", "name": "Geode Fever", "icon": 1, "duration": 300, "weight": 9, "color": "b07a4a",
      "desc": "Geodes are turning up everywhere. Triple geode chance!", "effect": {"type": "geode_mult", "value": 3.0},
-     "quest": {"text": "Find 3 geodes", "type": "collect", "target": "@geode", "count": 3}, "reward_coins": 350, "reward_xp": 180},
+     "quest": {"text": "Find 2 geodes", "type": "collect", "target": "@geode", "count": 2}, "reward_coins": 350, "reward_xp": 180},
     {"id": "ore_rush", "name": "Ore Rush", "icon": 2, "duration": 240, "weight": 10, "color": "ff9a3a",
      "desc": "Ore deposits are bursting! Every ore deposit drops +1.", "effect": {"type": "ore_bonus", "value": 1},
-     "quest": {"text": "Mine 20 ore deposits", "type": "mine_ore", "count": 20}, "reward_coins": 300, "reward_xp": 150},
+     "quest": {"text": "Mine 14 ore deposits", "type": "mine_ore", "count": 14}, "reward_coins": 300, "reward_xp": 150},
     {"id": "meteor_shower", "name": "Meteor Shower", "icon": 3, "duration": 240, "weight": 6, "color": "ff6a3a", "night_only": true,
      "desc": "Meteorites are crashing into the mountain! Find the fragments in nearby caves.", "effect": {"type": "meteor", "count": 10},
-     "quest": {"text": "Collect 5 Meteorite Ore", "type": "collect", "target": "meteorite_ore", "count": 5}, "reward_coins": 600, "reward_xp": 300},
+     "quest": {"text": "Collect 4 Meteorite Ore", "type": "collect", "target": "meteorite_ore", "count": 4}, "reward_coins": 600, "reward_xp": 300},
     {"id": "abandoned_cart", "name": "Abandoned Mine Cart", "icon": 4, "duration": 240, "weight": 7, "color": "c8a050",
      "desc": "An old mine cart full of treasure was spotted nearby. Find it before it's gone!", "effect": {"type": "cart"},
      "quest": {"text": "Loot the abandoned cart", "type": "loot_cart", "count": 1}, "reward_coins": 250, "reward_xp": 150},
     {"id": "double_extraction", "name": "Double Extraction", "icon": 5, "duration": 180, "weight": 8, "color": "4fdc6a",
      "desc": "Lucky streak! All mining drops are doubled.", "effect": {"type": "drop_mult", "value": 2},
-     "quest": {"text": "Mine 80 blocks", "type": "mine_any", "count": 80}, "reward_coins": 300, "reward_xp": 160},
+     "quest": {"text": "Mine 56 blocks", "type": "mine_any", "count": 56}, "reward_coins": 300, "reward_xp": 160},
     {"id": "ancient_discovery", "name": "Ancient Discovery", "icon": 6, "duration": 300, "weight": 4, "color": "4af0d0", "min_biome": 1,
      "desc": "A hidden chamber has opened somewhere close by. Follow the glow!", "effect": {"type": "ancient_chamber"},
      "quest": {"text": "Open the chamber's treasure chest", "type": "find_cache", "count": 1}, "reward_coins": 800, "reward_xp": 400},
     {"id": "rare_expedition", "name": "Rare Expedition", "icon": 7, "duration": 300, "weight": 4, "color": "ffd35a", "min_biome": 1,
      "desc": "A special cave route full of rare ore has opened nearby!", "effect": {"type": "expedition"},
-     "quest": {"text": "Mine 12 deposits in the expedition route", "type": "mine_ore", "count": 12}, "reward_coins": 700, "reward_xp": 350}
+     "quest": {"text": "Mine 8 deposits in the expedition route", "type": "mine_ore", "count": 8}, "reward_coins": 700, "reward_xp": 350}
   ]
 }

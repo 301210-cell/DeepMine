@@ -5,6 +5,7 @@ extends CanvasLayer
 
 const UiTheme = preload("res://scripts/ui/ui_theme.gd")
 const Kit = preload("res://scripts/ui/ui_kit.gd")
+const UiFx = preload("res://scripts/ui/ui_fx.gd")
 
 const PANELS := {
 	"inventory": "res://scenes/ui/panels/InventoryPanel.tscn",
@@ -43,17 +44,44 @@ var _prompt: PanelContainer
 var _prompt_key: Control
 var _prompt_label: Label
 var _fade_tw: Tween
+var _close_tw: Tween
+var _closing: Control = null
+var _dim_tw: Tween
+var fx: Control
+var right_col: VBoxContainer
 
 func _ready() -> void:
 	add_to_group("ui_root")
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	root.theme = UiTheme.get_theme()
 	hud.ui = self
-	# Toasts under the top-right HUD buttons
-	toasts.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	toasts.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 5)
-	toasts.offset_top = 42
-	toasts.custom_minimum_size.x = 120
+	# Right-hand notice column under the HUD buttons: compact event notice on top, toasts below.
+	# It lives in the Overlay, so it draws above any open panel, and it ignores the mouse.
+	right_col = VBoxContainer.new()
+	right_col.name = "RightColumn"
+	right_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	right_col.add_theme_constant_override("separation", 3)
+	overlay.add_child(right_col)
+	overlay.move_child(right_col, 0)
+	right_col.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	right_col.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 4)
+	right_col.offset_top = 46
+	banner.get_parent().remove_child(banner)
+	right_col.add_child(banner)
+	banner.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	banner.size_flags_horizontal = Control.SIZE_SHRINK_END
+	banner.set("ui", self)
+	toasts.get_parent().remove_child(toasts)
+	right_col.add_child(toasts)
+	toasts.size_flags_horizontal = Control.SIZE_SHRINK_END
+	# Screen-space UI effects (bursts, flying icons) above panels, below the screen fade.
+	fx = UiFx.new()
+	fx.name = "Fx"
+	fx.hud = hud
+	overlay.add_child(fx)
+	overlay.move_child(fx, fade_rect.get_index())
+	Events.sold.connect(func(v: int): if _panel: fx.sold(v))
+	_add_button_feedback(hud)
 	_build_prompt()
 	Events.open_panel_requested.connect(func(p: String, d: Variant): open_panel(p, d))
 	Events.mara_dialog.connect(func(lines: Array, title: String): show_dialog(lines, title))
@@ -104,24 +132,30 @@ func open_panel(name: String, data: Variant = null) -> void:
 			p.set("ui", self)
 		if p.has_signal("close_requested"):
 			p.connect("close_requested", close_panel)
+	_finish_closing()
+	if p.get_parent():
+		p.get_parent().remove_child(p)
+	p.modulate.a = 1.0
+	p.scale = Vector2.ONE
 	host.add_child(p)
 	_panel = p
 	_panel_name = name
 	if p.has_method("open"):
 		p.call("open", data)
-	dim.visible = true
+	_show_dim(true)
 	get_tree().paused = name in PAUSING
 	hide_prompt()
 	_update_blocking()
 	AudioManager.play("ui_open", -3.0)
 	Events.panel_opened.emit(name)
-	# open animation
+	# open animation: quick scale + fade pop around the screen centre
+	_add_button_feedback(p)
+	p.pivot_offset = host.size * 0.5
 	p.modulate.a = 0.0
-	var start_y := p.position.y
-	p.position.y = start_y + 8
+	p.scale = Vector2(0.94, 0.94)
 	var tw := p.create_tween().set_parallel(true)
 	tw.tween_property(p, "modulate:a", 1.0, 0.12)
-	tw.tween_property(p, "position:y", start_y, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(p, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _detach_current() -> void:
 	if _panel == null:
@@ -130,7 +164,8 @@ func _detach_current() -> void:
 	var n := _panel_name
 	_panel = null
 	_panel_name = ""
-	p.position.y = 0
+	p.scale = Vector2.ONE
+	p.modulate.a = 1.0
 	if p.get_parent():
 		p.get_parent().remove_child(p)
 	if p.has_method("on_closed"):
@@ -140,13 +175,32 @@ func _detach_current() -> void:
 func close_panel() -> void:
 	if _panel == null:
 		return
-	_detach_current()
 	if _return_to != "":
+		_detach_current()
 		var r := _return_to
 		_return_to = ""
 		open_panel(r)
 		return
-	dim.visible = false
+	# short fade-out, then detach (the panel stays interactable-free while fading)
+	var p := _panel
+	var n := _panel_name
+	_panel = null
+	_panel_name = ""
+	if not p.has_meta("mf"):
+		p.set_meta("mf", p.mouse_filter)
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if p.has_method("on_closed"):
+		p.call("on_closed")
+	Events.panel_closed.emit(n)
+	_finish_closing()
+	_closing = p
+	_close_tw = p.create_tween().set_parallel(true)
+	_close_tw.tween_property(p, "modulate:a", 0.0, 0.1)
+	_close_tw.tween_property(p, "scale", Vector2(0.97, 0.97), 0.1)
+	_close_tw.chain().tween_callback(func():
+		_close_tw = null
+		_finish_closing())
+	_show_dim(false)
 	get_tree().paused = false
 	_update_blocking()
 	AudioManager.play("ui_close", -3.0)
@@ -302,7 +356,7 @@ func _capture_setup(args: Array) -> void:
 	GameState.machine_state("smelter").queue = [{"r": 0, "n": 3}]
 	GameState.machine_state("smelter").progress = 1.6
 	GameState.machine_state("smelter").output = {"copper_bar": 2}
-	GameState.quest_state["hud"] = {"title": "Mine 50 Stone", "text": "Mine 50 Stone", "progress": "12 / 50"}
+	GameState.quest_state["hud"] = {"title": "Main Quest", "short": "Mine 50 Stone", "text": "Rock Bottom: Mine 50 Stone", "progress": "12 / 50"}
 	GameState.event_state = {"id": "crystal_surge", "time_left": 300.0, "progress": 2, "count": 8, "quest_text": "Mine 8 crystal or gem deposits"}
 	for i in 7:
 		GameState.stations[i] = true
@@ -336,5 +390,75 @@ func _capture_setup(args: Array) -> void:
 			open_panel("machine", "smelter")
 		"elevator":
 			open_panel("elevator", {"current": 1})
+		"fx":
+			open_panel("shop")
+			await get_tree().create_timer(1.2).timeout
+			fx.purchase(ResourceDatabase.equip_icon("copper_pickaxe"), Vector2(520, 130))
+			fx.sold(1234, Vector2(330, 230))
+			fx.upgraded("Level 2!", Vector2(200, 260))
 		_:
 			open_panel(what)
+
+# ================================================================ animation helpers
+func _finish_closing() -> void:
+	## Completes (or cuts short) the fade-out of the previously closed panel.
+	if _close_tw and _close_tw.is_valid():
+		_close_tw.kill()
+	_close_tw = null
+	var p := _closing
+	_closing = null
+	if p == null or not is_instance_valid(p):
+		return
+	if p.get_parent() == host and p != _panel:
+		host.remove_child(p)
+	p.modulate.a = 1.0
+	p.scale = Vector2.ONE
+	if p.has_meta("mf"):
+		p.mouse_filter = p.get_meta("mf")
+
+func _show_dim(on: bool) -> void:
+	if _dim_tw and _dim_tw.is_valid():
+		_dim_tw.kill()
+	if on:
+		if not dim.visible:
+			dim.modulate.a = 0.0
+		dim.visible = true
+		_dim_tw = dim.create_tween()
+		_dim_tw.tween_property(dim, "modulate:a", 1.0, 0.12)
+	else:
+		_dim_tw = dim.create_tween()
+		_dim_tw.tween_property(dim, "modulate:a", 0.0, 0.12)
+		_dim_tw.tween_callback(func(): dim.visible = false)
+
+## Gives every button under `node` a subtle hover lift and press squish (once per button).
+## Buttons created later inside the panel are picked up through child_entered_tree.
+func _add_button_feedback(node: Node) -> void:
+	if node is BaseButton:
+		_wire_button(node)
+	for c in node.get_children():
+		_add_button_feedback(c)
+	if node is Control and not node.has_meta("fx_watch"):
+		node.set_meta("fx_watch", true)
+		node.child_entered_tree.connect(func(c: Node): _add_button_feedback(c))
+
+func _wire_button(b: BaseButton) -> void:
+	if b.has_meta("fx_btn"):
+		return
+	b.set_meta("fx_btn", true)
+	b.mouse_entered.connect(func():
+		if b.disabled:
+			return
+		b.pivot_offset = b.size * 0.5
+		var tw := b.create_tween()
+		tw.tween_property(b, "scale", Vector2(1.04, 1.04), 0.08).set_trans(Tween.TRANS_QUAD))
+	b.mouse_exited.connect(func():
+		b.pivot_offset = b.size * 0.5
+		var tw := b.create_tween()
+		tw.tween_property(b, "scale", Vector2.ONE, 0.1))
+	b.button_down.connect(func():
+		b.pivot_offset = b.size * 0.5
+		var tw := b.create_tween()
+		tw.tween_property(b, "scale", Vector2(0.94, 0.94), 0.05))
+	b.button_up.connect(func():
+		var tw := b.create_tween()
+		tw.tween_property(b, "scale", Vector2(1.04, 1.04) if b.is_hovered() else Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))

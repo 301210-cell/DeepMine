@@ -150,3 +150,20 @@ func float_text(pos: Vector2, text: String, color: Color) -> void:
 	tw.tween_property(l, "global_position:y", l.global_position.y - 18.0, 0.9).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_property(l, "modulate:a", 0.0, 0.35).set_delay(0.6)
 	tw.chain().tween_callback(l.queue_free)
+
+## Quick white flash over a block the moment it breaks.
+func flash_cell(center: Vector2) -> void:
+	var r := ColorRect.new()
+	r.size = Vector2(16, 16)
+	r.position = center - Vector2(8, 8)
+	r.color = Color(1, 1, 0.92, 0.75)
+	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat := CanvasItemMaterial.new()
+	mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	r.material = mat
+	add_child(r)
+	r.pivot_offset = Vector2(8, 8)
+	var tw := r.create_tween().set_parallel(true)
+	tw.tween_property(r, "color:a", 0.0, 0.12)
+	tw.tween_property(r, "scale", Vector2(1.25, 1.25), 0.12)
+	tw.chain().tween_callback(r.queue_free)

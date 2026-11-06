@@ -362,6 +362,7 @@ func _upgrade() -> void:
 		error(why)
 	else:
 		AudioManager.play("skill_unlock", -4.0)
+		fx_upgrade("Level %d!" % int(GameState.machine_state(_mid).level))
 		toast("%s upgraded to level %d!" % [ResourceDatabase.machine(_mid).name, int(GameState.machine_state(_mid).level)], "good")
 		_refresh_list()
 		_refresh_dynamic()

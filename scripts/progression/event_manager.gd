@@ -83,7 +83,6 @@ func start(id: String) -> void:
 	_apply_mods(e)
 	_spawn_effect(e)
 	Events.world_event_started.emit(id)
-	Events.notify.emit("EVENT! %s" % e.name, "epic")
 
 func _apply_mods(e: Dictionary) -> void:
 	GameState.event_mods = {}

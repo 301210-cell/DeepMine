@@ -1,6 +1,6 @@
 extends Control
-## Loading screen on the animated mine-entrance backdrop (menu_backdrop.gd): the gem cart stays
-## still while crystals glow and sparkles twinkle. Shows "Loading... X%" above a blue bar, the
+## Loading screen on the animated title backdrop (menu_backdrop.gd): pickaxes sway, crystals and
+## gems shine, lanterns flicker. Shows "Loading... X%" above a golden bar in a dark frame, the
 ## tagline and rotating tips. Drives res://scripts/main/game_loader.gd:
 ##   start(mode), poll() -> float 0..1, is_done(), error_text(), game_scene() -> PackedScene
 ## Set `next_mode` (static, via preload of this script) before changing to this scene.
@@ -46,6 +46,7 @@ func _ready() -> void:
 	if theme == null and ResourceLoader.exists("res://scripts/ui/ui_theme.gd"):
 		theme = load("res://scripts/ui/ui_theme.gd").get_theme()
 	get_tree().paused = false
+	style_title_bar(bar)
 	back_button.pressed.connect(_back_to_menu)
 	error_box.visible = false
 	tip_i = randi() % TIPS.size()
@@ -120,3 +121,24 @@ func _capture_setup(args: Array) -> void:
 		bar.value = shown * 100.0
 		percent_label.text = "Loading... %d%%" % int(floor(shown * 100.0))
 		fade.color.a = 0.0
+
+## Golden fill inside a dark rounded frame (pixel-art 9-slices from tools/assetgen/gen_title.gd).
+static func style_title_bar(b: ProgressBar) -> void:
+	var frame := StyleBoxTexture.new()
+	frame.texture = ResourceDatabase.tex("res://assets/ui/title_bar_frame.png")
+	frame.texture_margin_left = 6
+	frame.texture_margin_right = 6
+	frame.texture_margin_top = 6
+	frame.texture_margin_bottom = 6
+	var fill := StyleBoxTexture.new()
+	fill.texture = ResourceDatabase.tex("res://assets/ui/title_bar_fill.png")
+	fill.texture_margin_left = 4
+	fill.texture_margin_right = 4
+	fill.texture_margin_top = 4
+	fill.texture_margin_bottom = 4
+	fill.expand_margin_left = -3
+	fill.expand_margin_right = -3
+	fill.expand_margin_top = -3
+	fill.expand_margin_bottom = -3
+	b.add_theme_stylebox_override("background", frame)
+	b.add_theme_stylebox_override("fill", fill)

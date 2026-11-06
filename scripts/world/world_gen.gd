@@ -59,6 +59,7 @@ func generate(seed: int):
 	status = "Building the mine"
 	_shaft_and_stations()
 	_entrance_and_tutorial()
+	build_hill(wd, seed)
 	_descent_path()
 	_rail_tunnels()
 	status = "Hiding treasure"
@@ -603,3 +604,31 @@ func _bedrock() -> void:
 	for y in range(H - 8, H):
 		for x in W:
 			_s(x, y, BEDROCK)
+
+# ================================================================ surface hill
+const HILL_START := 95    # first column of the rocky hill (the MINE portal is carved into its foot)
+const ALCOVE_X1 := 99     # last column of the carved entrance alcove (rows -6..-1 are open)
+
+## Raises a rocky hill east of the camp so the mine entrance is dug into a natural hillside.
+## Static so the game can also add it to worlds saved before v1.2.
+static func build_hill(wd, seed: int) -> void:
+	var n := FastNoiseLite.new()
+	n.seed = seed + 91
+	n.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	n.frequency = 0.045
+	n.fractal_octaves = 3
+	for x in WD.W:
+		if x < HILL_START:
+			wd.hill_top[x] = 0
+			continue
+		var d := x - HILL_START
+		var rise := minf(9.0 + d * 1.1, 15.0)          # rock rises over the portal into the hillside
+		var ridge := 14.0 + n.get_noise_1d(x) * 6.0 + sin(x * 0.11) * 2.0
+		var h := rise if d < 5 else lerpf(rise, ridge, clampf((d - 5) / 6.0, 0.0, 1.0))
+		h = clampf(h, 6.0, float(WD.SKY_ROWS - 4))
+		wd.hill_top[x] = -int(round(h))
+	# Carve the entrance alcove under the overhang so the portal sits *inside* the hillside
+	# and the path at ground level stays open up to the doorway.
+	for x in range(HILL_START, ALCOVE_X1 + 1):
+		for y in range(-6, 0):
+			wd.hill_mods[Vector2i(x, y)] = 0

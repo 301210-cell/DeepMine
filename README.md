@@ -20,9 +20,9 @@ A 2D pixel-art mining adventure made with **Godot 4.7** (GDScript). Start with a
 | Select a hotbar slot | 1–6 or the mouse wheel |
 | Interact (talk, enter or leave the mine, open machines or shops, ride elevators and carts, open chests) | E |
 | Inventory | I or Tab |
-| Skill Tree | K (unlocked during the tutorial) |
+| Skill Tree | K (unlocked during the tutorial), or click the level chip in the HUD |
 | Map | M |
-| Journal (quests, collection, discoveries, achievements) | J |
+| Journal (quests, collection, discoveries, achievements) | J, or click the quest box in the HUD |
 | Quick-drink a Health Tonic | H |
 | Fullscreen | F11 |
 | Pause / close a window | Escape |

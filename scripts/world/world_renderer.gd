@@ -160,7 +160,7 @@ func update_view(cam_center: Vector2, view_size: Vector2) -> void:
 	var c0 := Vector2i(int(floor((cam_center.x - half.x) / (CHUNK * TILE))) - 1, int(floor((cam_center.y - half.y) / (CHUNK * TILE))) - 1)
 	var c1 := Vector2i(int(floor((cam_center.x + half.x) / (CHUNK * TILE))) + 1, int(floor((cam_center.y + half.y) / (CHUNK * TILE))) + 1)
 	var need: Dictionary = {}
-	for cy in range(maxi(c0.y, 0), mini(c1.y, int(ceil(float(WD.H) / CHUNK)) - 1) + 1):
+	for cy in range(maxi(c0.y, -1), mini(c1.y, int(ceil(float(WD.H) / CHUNK)) - 1) + 1):
 		for cx in range(maxi(c0.x, 0), mini(c1.x, int(ceil(float(WD.W) / CHUNK)) - 1) + 1):
 			var k := Vector2i(cx, cy)
 			need[k] = true
@@ -186,7 +186,7 @@ func force_load_around(pos: Vector2, view_size: Vector2) -> void:
 	for cy in range(int(floor((pos.y - half.y) / (CHUNK * TILE))), int(floor((pos.y + half.y) / (CHUNK * TILE))) + 1):
 		for cx in range(int(floor((pos.x - half.x) / (CHUNK * TILE))), int(floor((pos.x + half.x) / (CHUNK * TILE))) + 1):
 			var k := Vector2i(cx, cy)
-			if cx < 0 or cy < 0 or cx * CHUNK >= WD.W or cy * CHUNK >= WD.H:
+			if cx < 0 or cy < -1 or cx * CHUNK >= WD.W or cy * CHUNK >= WD.H:
 				continue
 			if not loaded.has(k):
 				_load_chunk(k)
@@ -241,7 +241,7 @@ func _unload_chunk(k: Vector2i) -> void:
 	loaded.erase(k)
 
 func is_cell_loaded(c: Vector2i) -> bool:
-	return loaded.has(Vector2i(int(c.x / CHUNK), int(c.y / CHUNK)))
+	return loaded.has(_chunk_of(c))
 
 # ================================================================ cell rendering
 static func _hash(x: int, y: int) -> int:
@@ -266,7 +266,13 @@ func _wall_row(x: int, y: int) -> int:
 func _needs_wall(x: int, y: int) -> bool:
 	# Every underground open cell gets a back wall in the biome's own rock, so caves never show
 	# flat background "holes" (this replaced the older edge-only walls).
-	return y >= 1
+	if y >= 1:
+		return true
+	# Open cells inside the hill silhouette (the carved mine entrance, mined tunnels) get one too.
+	if y < 0 and x >= 0 and x < WD.W:
+		var top: int = wd.hill_top[x]
+		return top < 0 and y >= top
+	return false
 
 func _needs_wall_edges_only(x: int, y: int) -> bool:
 	if y < 1:
@@ -335,13 +341,13 @@ func _on_cell_changed(c: Vector2i) -> void:
 		return
 	for o in [Vector2i.ZERO, Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
 		var n: Vector2i = c + o
-		if WD.in_bounds(n.x, n.y):
+		if WD.in_cells(n.x, n.y):
 			_render_cell(n.x, n.y)
 	# walls within radius 2 may change
 	for dy in range(-3, 4):
 		for dx in range(-3, 4):
 			var n2 := c + Vector2i(dx, dy)
-			if WD.in_bounds(n2.x, n2.y) and not wd.is_solid(n2.x, n2.y):
+			if WD.in_cells(n2.x, n2.y) and not wd.is_solid(n2.x, n2.y):
 				if _needs_wall(n2.x, n2.y):
 					back.set_cell(n2, SRC_WALL, Vector2i((_hash(n2.x, n2.y) >> 2) & 3, _wall_row(n2.x, n2.y)))
 				else:
@@ -357,11 +363,11 @@ func _on_cell_changed(c: Vector2i) -> void:
 		wd.set_decor(c.x, c.y, 0)
 	redraw_chunk_of(c)
 	if wd.get_block(c.x, c.y) == ResourceDatabase.TORCH:
-		var k := Vector2i(int(c.x / CHUNK), int(c.y / CHUNK))
+		var k := _chunk_of(c)
 		_add_light(loaded[k], WD.cell_center(c), Color("ffb860"), 0.85, 0.9)
 
 func redraw_chunk_of(c: Vector2i) -> void:
-	var k := Vector2i(int(c.x / CHUNK), int(c.y / CHUNK))
+	var k := _chunk_of(c)
 	var info: Dictionary = loaded.get(k, {})
 	if info.is_empty():
 		return
@@ -469,3 +475,6 @@ class DecorChunk:
 							draw_rect(Rect2(x * 16 + 1, y * 16 + 1, 14, 14), Color(hl.r, hl.g, hl.b, 0.55 * p3), false, 1.0)
 							var h2: int = renderer._hash(x, y)
 							draw_texture_rect_region(ores_tex, Rect2(x * 16, y * 16, 16, 16), Rect2(((h2 >> 3) & 3) * 16, int(b.ore) * 16, 16, 16), Color(1, 1, 1, 0.8 * p3))
+
+static func _chunk_of(c: Vector2i) -> Vector2i:
+	return Vector2i(int(floor(c.x / float(CHUNK))), int(floor(c.y / float(CHUNK))))

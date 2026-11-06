@@ -1,6 +1,6 @@
 extends Control
-## Main menu over the animated mine-entrance backdrop (see menu_backdrop.gd):
-## the cart of shiny gems stays still while crystals pulse, lanterns flicker and sparkles twinkle.
+## Main menu over the animated title backdrop (see menu_backdrop.gd): pickaxes sway, crystals
+## and gems shine, lanterns flicker. The buttons sit in a gold-trimmed stone frame at the bottom.
 ## Buttons: Continue / New Game (top row), Settings / Credits / Quit (bottom row).
 
 const LoadingScreenScript = preload("res://scripts/main/loading_screen.gd")
@@ -28,6 +28,7 @@ func _ready() -> void:
 	get_tree().paused = false
 	GameState.in_game = false
 	GameState.ui_blocking = false
+	_style_menu()
 	continue_button.pressed.connect(_on_continue)
 	new_button.pressed.connect(_on_new)
 	settings_button.pressed.connect(_on_settings)
@@ -171,3 +172,50 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _capture_setup(_args: Array) -> void:
 	await (Engine.get_main_loop() as SceneTree).create_timer(1.4).timeout
+
+# ---------------------------------------------------------------- styling
+func _tex_box(path: String, m: int, content_h: float = 8.0, content_v: float = 3.0) -> StyleBoxTexture:
+	var sb := StyleBoxTexture.new()
+	sb.texture = ResourceDatabase.tex(path)
+	sb.texture_margin_left = m
+	sb.texture_margin_right = m
+	sb.texture_margin_top = m
+	sb.texture_margin_bottom = m
+	sb.content_margin_left = content_h
+	sb.content_margin_right = content_h
+	sb.content_margin_top = content_v
+	sb.content_margin_bottom = content_v + 1.0
+	return sb
+
+func _style_menu() -> void:
+	## Gold-trimmed stone buttons in a dark frame that match the title art (gen_title.gd).
+	%MenuPanel.add_theme_stylebox_override("panel", _tex_box("res://assets/ui/title_bar_frame.png", 6, 8.0, 6.0))
+	for b: Button in [continue_button, new_button, settings_button, credits_button, quit_button]:
+		var kind := "gold" if b == continue_button or b == new_button else "steel"
+		var normal := _tex_box("res://assets/ui/title_btn_%s_normal.png" % kind, 8)
+		var hover := _tex_box("res://assets/ui/title_btn_%s_hover.png" % kind, 8)
+		var pressed := _tex_box("res://assets/ui/title_btn_%s_pressed.png" % kind, 8)
+		var disabled := _tex_box("res://assets/ui/title_btn_steel_normal.png", 8)
+		disabled.modulate_color = Color(0.6, 0.6, 0.7, 0.8)
+		b.add_theme_stylebox_override("normal", normal)
+		b.add_theme_stylebox_override("hover", hover)
+		b.add_theme_stylebox_override("pressed", pressed)
+		b.add_theme_stylebox_override("focus", hover)
+		b.add_theme_stylebox_override("disabled", disabled)
+		var text_col := Color("ffe9a8") if kind == "gold" else Color("dfe6ff")
+		b.add_theme_color_override("font_color", text_col)
+		b.add_theme_color_override("font_hover_color", Color.WHITE)
+		b.add_theme_color_override("font_focus_color", Color.WHITE)
+		b.add_theme_color_override("font_pressed_color", text_col.darkened(0.15))
+		b.add_theme_color_override("font_disabled_color", Color(0.55, 0.58, 0.7))
+		b.add_theme_color_override("font_shadow_color", Color(0.02, 0.02, 0.06, 0.9))
+		b.add_theme_constant_override("shadow_offset_x", 1)
+		b.add_theme_constant_override("shadow_offset_y", 1)
+		# a small pop when hovered
+		b.mouse_entered.connect(func():
+			if b.disabled:
+				return
+			b.pivot_offset = b.size * 0.5
+			var tw: Tween = b.create_tween()
+			tw.tween_property(b, "scale", Vector2(1.06, 1.06), 0.08)
+			tw.tween_property(b, "scale", Vector2.ONE, 0.12))

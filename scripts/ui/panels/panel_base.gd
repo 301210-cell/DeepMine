@@ -56,6 +56,35 @@ func make_tabs(names: Array, on_select: Callable, selected: String = "") -> HBox
 		b.name = String(n).replace(" ", "_")
 		b.button_pressed = (String(n) == selected) or (selected == "" and n == names[0])
 		var nn: String = n
-		b.pressed.connect(func(): on_select.call(nn))
+		b.pressed.connect(func():
+			on_select.call(nn)
+			_fade_after(h))
 		h.add_child(b)
 	return h
+
+## Quick fade-in of whatever sits after the tab strip (the tab's content) on tab switch.
+func _fade_after(tabs: Control) -> void:
+	var par := tabs.get_parent()
+	if par == null:
+		return
+	var after := false
+	for c in par.get_children():
+		if c == tabs:
+			after = true
+			continue
+		if after and c is CanvasItem:
+			var ci := c as CanvasItem
+			ci.modulate.a = 0.3
+			ci.create_tween().tween_property(ci, "modulate:a", 1.0, 0.16)
+
+# ---------------------------------------------------------------- UI effects (see ui_fx.gd)
+func fx_purchase(icon: Texture2D, text: String = "Purchased!", fly_to_bag: bool = true) -> void:
+	if ui and ui.get("fx"):
+		if fly_to_bag:
+			ui.fx.purchase(icon, Vector2.INF, text)
+		else:
+			ui.fx.upgraded(text)
+
+func fx_upgrade(text: String = "Upgraded!") -> void:
+	if ui and ui.get("fx"):
+		ui.fx.upgraded(text)

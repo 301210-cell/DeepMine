@@ -20,12 +20,20 @@ var markers: Dictionary = {}      # name -> Vector2i (tutorial highlights, entra
 var world_seed: int = 0
 var dirty_cells: Array[Vector2i] = [] # changed since last renderer sync
 
+# Terrain above ground level (the rocky hill the mine entrance is dug into).
+# hill_top[x] = topmost solid row (negative) for that column, or 0 when there is no hill.
+const SKY_ROWS := 28
+var hill_top := PackedInt32Array()
+var hill_mods: Dictionary = {}   # Vector2i -> block id for mined/changed hill cells
+
 signal cell_changed(cell: Vector2i)
 
 func _init() -> void:
 	blocks.resize(W * H)
 	decor.resize(W * H)
 	seen.resize(W * H)
+	hill_top.resize(W)
+	hill_top.fill(0)
 
 static func idx(x: int, y: int) -> int:
 	return y * W + x
@@ -33,9 +41,32 @@ static func idx(x: int, y: int) -> int:
 static func in_bounds(x: int, y: int) -> bool:
 	return x >= 0 and y >= 0 and x < W and y < H
 
+## Like in_bounds, but includes the above-ground hill rows (for rendering and mining).
+static func in_cells(x: int, y: int) -> bool:
+	return x >= 0 and y >= -SKY_ROWS and x < W and y < H
+
+func hill_block(x: int, y: int) -> int:
+	var c := Vector2i(x, y)
+	if hill_mods.has(c):
+		return int(hill_mods[c])
+	var top: int = hill_top[x]
+	if top >= 0 or y < top:
+		return 0
+	var d := y - top
+	if d == 0:
+		return ResourceDatabase.GRASS
+	if d <= 2:
+		return ResourceDatabase.DIRT
+	var h := ((x * 73856093) ^ (y * 19349663)) & 0xff
+	return 4 if h < 40 else ResourceDatabase.STONE
+
 func get_block(x: int, y: int) -> int:
 	if y < 0:
-		return 0 if x >= 0 and x < W else ResourceDatabase.BEDROCK
+		if x < 0 or x >= W:
+			return ResourceDatabase.BEDROCK
+		if y < -SKY_ROWS:
+			return 0
+		return hill_block(x, y)
 	if not in_bounds(x, y):
 		return ResourceDatabase.BEDROCK
 	return blocks[y * W + x]
@@ -44,6 +75,11 @@ func get_blockv(c: Vector2i) -> int:
 	return get_block(c.x, c.y)
 
 func set_block(x: int, y: int, id: int) -> void:
+	if y < 0 and in_cells(x, y):
+		hill_mods[Vector2i(x, y)] = id
+		damage.erase(Vector2i(x, y))
+		cell_changed.emit(Vector2i(x, y))
+		return
 	if not in_bounds(x, y):
 		return
 	blocks[y * W + x] = id
@@ -127,7 +163,14 @@ func serialize() -> Dictionary:
 		"decor": Marshalls.raw_to_base64(decor.compress(FileAccess.COMPRESSION_DEFLATE)),
 		"seen": Marshalls.raw_to_base64(seen.compress(FileAccess.COMPRESSION_DEFLATE)),
 		"damage": dmg, "entities": entities, "markers": mk,
+		"hill_top": Array(hill_top), "hill_mods": _hill_mods_list(),
 	}
+
+func _hill_mods_list() -> Array:
+	var out := []
+	for c in hill_mods:
+		out.append([c.x, c.y, int(hill_mods[c])])
+	return out
 
 static func deserialize(d: Dictionary):
 	if int(d.get("w", 0)) != W or int(d.get("h", 0)) != H:
@@ -153,4 +196,10 @@ static func deserialize(d: Dictionary):
 	var mk: Dictionary = d.get("markers", {})
 	for k in mk:
 		wd.markers[k] = Vector2i(int(mk[k][0]), int(mk[k][1]))
+	var ht: Array = d.get("hill_top", [])
+	if ht.size() == W:
+		for i in W:
+			wd.hill_top[i] = int(ht[i])
+	for m in d.get("hill_mods", []):
+		wd.hill_mods[Vector2i(int(m[0]), int(m[1]))] = int(m[2])
 	return wd

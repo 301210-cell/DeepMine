@@ -2,10 +2,12 @@
 
 [ext_resource type="Script" path="res://scripts/main/loading_screen.gd" id="1_loading"]
 [ext_resource type="Script" path="res://scripts/main/menu_backdrop.gd" id="2_backdrop"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel_big.fnt" id="3_big"]
+[ext_resource type="FontFile" path="res://assets/fonts/pixel.fnt" id="4_small"]
 
 [sub_resource type="Gradient" id="Gradient_shade"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(0.02, 0.03, 0.09, 0, 0.02, 0.03, 0.09, 0.85)
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.02, 0.02, 0.06, 0, 0.02, 0.02, 0.06, 0.55, 0.02, 0.02, 0.06, 0.8)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_shade"]
 gradient = SubResource("Gradient_shade")
@@ -38,7 +40,7 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -80.0
+offset_top = -92.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
@@ -54,7 +56,7 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -170.0
 offset_top = -66.0
-offset_right = 90.0
+offset_right = 170.0
 offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -65,29 +67,42 @@ alignment = 2
 [node name="PercentLabel" type="Label" parent="Bottom"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"LabelTitle"
 theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.06, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_big")
+theme_override_font_sizes/font_size = 16
 text = "Loading... 0%"
 horizontal_alignment = 1
 
 [node name="Bar" type="ProgressBar" parent="Bottom"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(250, 10)
+custom_minimum_size = Vector2(300, 16)
 layout_mode = 2
 size_flags_horizontal = 4
 show_percentage = false
 
 [node name="TagLabel" type="Label" parent="Bottom"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.93, 0.95, 1, 1)
-text = "Explore. Mine. Upgrade. Discover."
+theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.06, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
+text = "Explore. Mine. Upgrade."
 horizontal_alignment = 1
 
 [node name="TipLabel" type="Label" parent="Bottom"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"LabelSmall"
-theme_override_colors/font_color = Color(0.72, 0.8, 1, 0.9)
+theme_override_colors/font_color = Color(0.7, 0.78, 1, 0.85)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.06, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("4_small")
+theme_override_font_sizes/font_size = 10
 text = "Tip: ..."
 horizontal_alignment = 1
 

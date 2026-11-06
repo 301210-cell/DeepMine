@@ -343,6 +343,7 @@ func _break_block(c: Vector2i, id: int, b: Dictionary) -> void:
 		"crystal": AudioManager.play("break_crystal", -2.0)
 		_: AudioManager.play("break_rock", -2.0)
 	if game:
+		game.effects.flash_cell(center)
 		game.effects.debris(center, game.block_color(id, c.y), 12)
 		game.effects.dust(center + Vector2(0, 6), 5)
 		if is_deposit and int(b.get("rarity", 0)) >= 2:
@@ -443,6 +444,7 @@ func explode_at(pos: Vector2, radius_tiles: float = 2.3) -> void:
 
 # ================================================================ drawing
 func _draw() -> void:
+	_draw_swing_smear()
 	if not has_target:
 		return
 	var r := Rect2(Vector2(target.x * 16, target.y * 16), Vector2(16, 16))
@@ -466,3 +468,26 @@ func _draw() -> void:
 		var w := 14.0 * (1.0 - dmg / dur)
 		draw_rect(Rect2(p + Vector2(1, -4), Vector2(14, 2)), Color(0.05, 0.05, 0.1, 0.8))
 		draw_rect(Rect2(p + Vector2(1, -4), Vector2(w, 2)), Color("ffd35a"))
+
+## Soft motion smear behind the pickaxe head during the strike part of the swing.
+func _draw_swing_smear() -> void:
+	if not _swinging or player == null:
+		return
+	var p := clampf(_swing_t, 0.0, 1.0)
+	if p < 0.44 or p > 0.7:
+		return
+	var f: int = player.facing
+	var pivot: Vector2 = player.global_position + Vector2(4 * f, -19)
+	var a1 := deg_to_rad(-118.0)
+	var a2 := deg_to_rad(_tool_angle)
+	var steps := 7
+	var fade := 1.0 - absf(p - 0.58) / 0.16
+	for i in steps:
+		var t0 := float(i) / steps
+		var t1 := float(i + 1) / steps
+		var r := 21.0
+		var ang0 := lerpf(a1, a2, t0) - PI * 0.25
+		var ang1 := lerpf(a1, a2, t1) - PI * 0.25
+		var d0 := Vector2(cos(ang0) * f, sin(ang0)) * r
+		var d1 := Vector2(cos(ang1) * f, sin(ang1)) * r
+		draw_line(pivot + d0, pivot + d1, Color(1, 0.97, 0.85, 0.32 * t1 * fade), 2.0)
